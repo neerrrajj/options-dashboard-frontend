@@ -1,121 +1,198 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+
+import { useGreeksSummary } from "@/hooks/useGreeksSummary";
+
+type GreeksSnapshot = {
+  ist_minute: string;
+  otm_call_delta: number;
+  otm_put_delta: number;
+  otm_call_theta: number;
+  otm_put_theta: number;
+  otm_call_vega: number;
+  otm_put_vega: number;
+};
+
 
 export const GreeksChart = () => {
-  // Dummy time series data for intraday Greeks variation
-  const timeSeriesData = [
-    { time: "09:15", call_vega: 1180, put_vega: 1520, call_theta: -820, put_theta: -890, call_delta: 0.28, put_delta: -0.35 },
-    { time: "09:30", call_vega: 1195, put_vega: 1535, call_theta: -825, put_theta: -895, call_delta: 0.30, put_delta: -0.38 },
-    { time: "10:00", call_vega: 1210, put_vega: 1548, call_theta: -830, put_theta: -900, call_delta: 0.32, put_delta: -0.40 },
-    { time: "10:30", call_vega: 1225, put_vega: 1560, call_theta: -835, put_theta: -905, call_delta: 0.33, put_delta: -0.41 },
-    { time: "11:00", call_vega: 1238, put_vega: 1572, call_theta: -840, put_theta: -910, call_delta: 0.34, put_delta: -0.42 },
-    { time: "11:30", call_vega: 1248, put_vega: 1578, call_theta: -845, put_theta: -915, call_delta: 0.355, put_delta: -0.425 },
-    { time: "12:00", call_vega: 1251, put_vega: 1581, call_theta: -850, put_theta: -920, call_delta: 0.35, put_delta: -0.42 },
-  ];
+  const { data = [], isLoading } = useGreeksSummary() as {
+    data: GreeksSnapshot[];
+    isLoading: boolean;
+  };
+
+  if (isLoading) return <div></div>;
+  if (!data.length) return <div></div>;
+
+  const first = data[0];
+
+  const transformedData = data.map((d, i) => ({
+    index: i,
+    ist_minute: d.ist_minute,
+    otm_call_delta: first.otm_call_delta - d.otm_call_delta,
+    otm_put_delta: first.otm_put_delta - d.otm_put_delta,
+    otm_call_theta: first.otm_call_theta - d.otm_call_theta,
+    otm_put_theta: first.otm_put_theta - d.otm_put_theta,
+    otm_call_vega: first.otm_call_vega - d.otm_call_vega,
+    otm_put_vega: first.otm_put_vega - d.otm_put_vega,
+  }));
+
+  console.log("transformed data:", transformedData)
 
   const vegaConfig = {
-    call_vega: { label: "Call Vega", color: "hsl(142, 76%, 36%)" },
-    put_vega: { label: "Put Vega", color: "hsl(346, 87%, 43%)" },
+    otm_call_vega: { label: "Call Vega", color: "hsl(142, 76%, 36%)" },
+    otm_put_vega: { label: "Put Vega", color: "hsl(346, 87%, 43%)" },
   };
 
   const thetaConfig = {
-    call_theta: { label: "Call Theta", color: "hsl(39, 96%, 40%)" },
-    put_theta: { label: "Put Theta", color: "hsl(20, 96%, 40%)" },
+    otm_call_theta: { label: "Call Theta", color: "hsl(39, 96%, 40%)" },
+    otm_put_theta: { label: "Put Theta", color: "hsl(20, 96%, 40%)" },
   };
 
   const deltaConfig = {
-    call_delta: { label: "Call Delta", color: "hsl(262, 83%, 58%)" },
-    put_delta: { label: "Put Delta", color: "hsl(215, 100%, 50%)" },
+    otm_call_delta: { label: "Call Delta", color: "hsl(262, 83%, 58%)" },
+    otm_put_delta: { label: "Put Delta", color: "hsl(215, 100%, 50%)" },
   };
+
+  const tickBuckets = transformedData
+    .map((d) => d.ist_minute)
+    .filter((t) => {
+      const date = new Date(t);
+      return date.getMinutes() % 15 === 0 && date.getSeconds() === 0;
+    })
+    .slice(1);
+
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Intraday Greeks Variation</CardTitle>
+        <CardTitle>Intraday change in OTM Greeks</CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="vega" className="w-full">
+        <Tabs defaultValue="vega" className="w-full border-1">
           <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="vega">Vega</TabsTrigger>
             <TabsTrigger value="theta">Theta</TabsTrigger>
             <TabsTrigger value="delta">Delta</TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="vega">
-            <ChartContainer config={vegaConfig} className="h-96">
+
+          <TabsContent value="vega" >
+            <ChartContainer config={vegaConfig} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={timeSeriesData}>
-                  <XAxis dataKey="time" tick={{ fontSize: 12 }} />
+                <LineChart data={transformedData}>
+                  <XAxis
+                    dataKey="ist_minute"
+                    tick={{ fontSize: 12 }}
+                    ticks={tickBuckets}
+                    tickFormatter={(value) =>
+                      new Date(value).toLocaleTimeString('en-IN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      })
+                    }
+                  />
                   <YAxis tick={{ fontSize: 12 }} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Line 
-                    type="monotone" 
-                    dataKey="call_vega" 
-                    stroke="var(--color-call_vega)" 
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="put_vega" 
-                    stroke="var(--color-put_vega)" 
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                  />
+                  <ChartTooltip content={<ChartTooltipContent labelFormatter={(label) =>
+                    new Date(label).toLocaleTimeString('en-IN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false,
+                    })
+                  } />} />
+                  {Object.entries(vegaConfig).map(([key, { color }]) => (
+                    <Line
+                      key={key}
+                      type="monotone"
+                      dataKey={key}
+                      stroke={color}
+                      strokeWidth={2}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                  ))}
                 </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
           </TabsContent>
-          
+
           <TabsContent value="theta">
-            <ChartContainer config={thetaConfig} className="h-96">
+            <ChartContainer config={thetaConfig} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={timeSeriesData}>
-                  <XAxis dataKey="time" tick={{ fontSize: 12 }} />
+                <LineChart data={transformedData}>
+                  <XAxis
+                    dataKey="ist_minute"
+                    tick={{ fontSize: 12 }}
+                    ticks={tickBuckets}
+                    tickFormatter={(value) =>
+                      new Date(value).toLocaleTimeString('en-IN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      })
+                    }
+                  />
                   <YAxis tick={{ fontSize: 12 }} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Line 
-                    type="monotone" 
-                    dataKey="call_theta" 
-                    stroke="var(--color-call_theta)" 
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="put_theta" 
-                    stroke="var(--color-put_theta)" 
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                  />
+                  <ChartTooltip content={<ChartTooltipContent labelFormatter={(label) =>
+                    new Date(label).toLocaleTimeString('en-IN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false,
+                    })
+                  } />} />
+                  {Object.entries(thetaConfig).map(([key, { color }]) => (
+                    <Line
+                      key={key}
+                      type="monotone"
+                      dataKey={key}
+                      stroke={color}
+                      strokeWidth={2}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                  ))}
                 </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
           </TabsContent>
-          
+
           <TabsContent value="delta">
-            <ChartContainer config={deltaConfig} className="h-96">
+            <ChartContainer config={deltaConfig} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={timeSeriesData}>
-                  <XAxis dataKey="time" tick={{ fontSize: 12 }} />
+                <LineChart data={transformedData}>
+                  <XAxis
+                    dataKey="ist_minute"
+                    tick={{ fontSize: 12 }}
+                    ticks={tickBuckets}
+                    tickFormatter={(value) =>
+                      new Date(value).toLocaleTimeString('en-IN', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      })
+                    }
+                  />
                   <YAxis tick={{ fontSize: 12 }} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Line 
-                    type="monotone" 
-                    dataKey="call_delta" 
-                    stroke="var(--color-call_delta)" 
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="put_delta" 
-                    stroke="var(--color-put_delta)" 
-                    strokeWidth={2}
-                    dot={{ r: 3 }}
-                  />
+                  <ChartTooltip content={<ChartTooltipContent labelFormatter={(label) =>
+                    new Date(label).toLocaleTimeString('en-IN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false,
+                    })
+                  } />} />
+                  {Object.entries(deltaConfig).map(([key, { color }]) => (
+                    <Line
+                      key={key}
+                      type="monotone"
+                      dataKey={key}
+                      stroke={color}
+                      strokeWidth={2}
+                      dot={false}
+                      isAnimationActive={false}
+                    />
+                  ))}
                 </LineChart>
               </ResponsiveContainer>
             </ChartContainer>

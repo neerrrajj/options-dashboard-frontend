@@ -1,105 +1,111 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
+
+import { useGreeksSummary } from '@/hooks/useGreeksSummary';
+
+const labels = [
+  "Call Vega",
+  "Put Vega",
+  "Call Theta",
+  "Put Theta",
+  "Call Delta",
+  "Put Delta",
+];
 
 export const GreeksMetrics = () => {
-  // Dummy data for intraday changes in OTM Greeks
-  const greeksData = {
-    otm_call_vega: { current: 1250.50, change: -45.30, percentage: -3.5 },
-    otm_put_vega: { current: 1580.75, change: 62.20, percentage: 4.1 },
-    otm_call_theta: { current: -850.25, change: -25.80, percentage: -3.1 },
-    otm_put_theta: { current: -920.40, change: -18.90, percentage: -2.1 },
-    otm_call_delta: { current: 0.35, change: 0.05, percentage: 16.7 },
-    otm_put_delta: { current: -0.42, change: -0.08, percentage: -23.5 },
-  };
-
-  const MetricCard = ({ 
-    title, 
-    current, 
-    change, 
-    percentage, 
-    color = "blue" 
-  }: {
-    title: string;
-    current: number;
-    change: number;
-    percentage: number;
-    color?: string;
-  }) => {
-    const isPositive = change >= 0;
-    
+  const { data = [], isLoading } = useGreeksSummary()
+  
+  if (isLoading) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="space-y-2">
-            <div className="text-sm font-medium text-muted-foreground">
-              {title}
-            </div>
-            <div className="text-2xl font-bold">
-              {current.toFixed(2)}
-            </div>
-            <div className="flex items-center text-xs">
-              {isPositive ? (
-                <ArrowUpIcon className="h-3 w-3 text-green-500 mr-1" />
-              ) : (
-                <ArrowDownIcon className="h-3 w-3 text-red-500 mr-1" />
-              )}
-              <span className={isPositive ? "text-green-500" : "text-red-500"}>
-                {change >= 0 ? '+' : ''}{change.toFixed(2)} ({percentage >= 0 ? '+' : ''}{percentage.toFixed(1)}%)
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="col-span-7">
+        <div className="w-full flex items-end justify-between mt-4">
+          <h1 className="text-3xl font-bold pl-2">OTM Greeks</h1>
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <div className="mt-4 grid grid-rows-2 grid-flow-col gap-4">
+          {labels.map((label) => (
+            <Card key={label} className="py-4">
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {label}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-6 w-16" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
     );
+  }
+
+  if (!data.length) {
+    return (
+      <div className="col-span-7">
+        <div className="w-full flex items-end justify-between mt-4">
+          <h1 className="text-3xl font-bold pl-2">OTM Greeks</h1>
+        </div>
+        <div className="mt-4 grid grid-rows-2 grid-flow-col gap-4">
+          {labels.map(label => (
+            <Card key={label} className="py-4 gap-4">
+              <CardHeader>
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {label}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-end justify-between">
+                <span className="text-2xl font-semibold tabular-nums w-[12ch]">
+                  -
+                </span>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const first = data[0];
+  const last = data[data.length - 1];
+  const lastTime = new Date(last.ist_minute).toLocaleTimeString('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+
+  const diff = {
+    "Call Vega": first.otm_call_vega - last.otm_call_vega,
+    "Put Vega": first.otm_put_vega - last.otm_put_vega,
+    "Call Theta": first.otm_call_theta - last.otm_call_theta,
+    "Put Theta": first.otm_put_theta - last.otm_put_theta,
+    "Call Delta": first.otm_call_delta - last.otm_call_delta,
+    "Put Delta": first.otm_put_delta - last.otm_put_delta,
   };
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">OTM Greeks Summary</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <MetricCard
-          title="OTM Call Vega"
-          current={greeksData.otm_call_vega.current}
-          change={greeksData.otm_call_vega.change}
-          percentage={greeksData.otm_call_vega.percentage}
-          color="green"
-        />
-        <MetricCard
-          title="OTM Put Vega"
-          current={greeksData.otm_put_vega.current}
-          change={greeksData.otm_put_vega.change}
-          percentage={greeksData.otm_put_vega.percentage}
-          color="red"
-        />
-        <MetricCard
-          title="OTM Call Theta"
-          current={greeksData.otm_call_theta.current}
-          change={greeksData.otm_call_theta.change}
-          percentage={greeksData.otm_call_theta.percentage}
-          color="orange"
-        />
-        <MetricCard
-          title="OTM Put Theta"
-          current={greeksData.otm_put_theta.current}
-          change={greeksData.otm_put_theta.change}
-          percentage={greeksData.otm_put_theta.percentage}
-          color="orange"
-        />
-        <MetricCard
-          title="OTM Call Delta"
-          current={greeksData.otm_call_delta.current}
-          change={greeksData.otm_call_delta.change}
-          percentage={greeksData.otm_call_delta.percentage}
-          color="purple"
-        />
-        <MetricCard
-          title="OTM Put Delta"
-          current={greeksData.otm_put_delta.current}
-          change={greeksData.otm_put_delta.change}
-          percentage={greeksData.otm_put_delta.percentage}
-          color="indigo"
-        />
+    <div className="col-span-7">
+      <div className="w-full flex items-end justify-between mt-4">
+        <h1 className="text-3xl font-bold pl-2">OTM Greeks</h1>
+        <span className="text-sm text-muted-foreground">Last updated: {lastTime}</span>
+      </div>
+      <div className="mt-4 grid grid-rows-2 grid-flow-col gap-4">
+        {Object.entries(diff).map(([label, value]) => (
+          <Card key={label} className="py-4 gap-4">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {label}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex items-end justify-between">
+              <span className="text-2xl font-semibold tabular-nums w-[12ch]">
+                {value.toFixed(2)}
+              </span>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
   );
 };
+
