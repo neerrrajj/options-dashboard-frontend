@@ -32,7 +32,7 @@ export const useGexUrlSync = () => {
     setInitialized,
   } = useGexFilterStore();
 
-  // Read URL params and update store on initial load
+  // Read URL params and update store on initial load (only once on mount)
   useEffect(() => {
     if (isInitialized) return; // Only run once
 
@@ -41,27 +41,20 @@ export const useGexUrlSync = () => {
     const expiryParam = searchParams.get('expiry');
     const dateParam = searchParams.get('date');
 
-    // Determine mode
-    let targetMode: 'live' | 'historical';
+    // Only set mode from URL if explicitly provided
     if (modeParam && ['live', 'historical'].includes(modeParam)) {
-      targetMode = modeParam;
-    } else {
-      targetMode = isBeforeMarketOpen() ? 'historical' : 'live';
+      setMode(modeParam);
+      
+      // Set date if in historical mode and date is provided
+      if (modeParam === 'historical' && dateParam) {
+        setDate(dateParam);
+      }
     }
-
-    // Set mode first
-    setMode(targetMode);
+    // If no mode in URL, keep store default (don't override)
 
     // Set instrument if valid
     if (instrumentParam) {
       setInstrument(instrumentParam);
-    }
-
-    // Set date if in historical mode and date is provided
-    if (targetMode === 'historical' && dateParam) {
-      setDate(dateParam);
-    } else if (targetMode === 'live') {
-      setDate(getISTToday());
     }
 
     // Set expiry if provided
@@ -70,7 +63,7 @@ export const useGexUrlSync = () => {
     }
 
     setInitialized(true);
-  }, [searchParams, isInitialized, setInstrument, setExpiry, setMode, setDate, setInitialized]);
+  }, []); // Empty deps - only run once on mount
 
   // Update URL when state changes
   useEffect(() => {
@@ -109,7 +102,7 @@ export const useGreeksUrlSync = () => {
     setInitialized,
   } = useGreeksFilterStore();
 
-  // Read URL params and update store on initial load
+  // Read URL params and update store on initial load (only once on mount)
   useEffect(() => {
     if (isInitialized) return;
 
@@ -118,23 +111,18 @@ export const useGreeksUrlSync = () => {
     const expiryParam = searchParams.get('expiry');
     const dateParam = searchParams.get('date');
 
-    let targetMode: 'live' | 'historical';
+    // Only set mode from URL if explicitly provided
     if (modeParam && ['live', 'historical'].includes(modeParam)) {
-      targetMode = modeParam;
-    } else {
-      targetMode = isBeforeMarketOpen() ? 'historical' : 'live';
+      setMode(modeParam);
+      
+      if (modeParam === 'historical' && dateParam) {
+        setDate(dateParam);
+      }
     }
-
-    setMode(targetMode);
+    // If no mode in URL, keep store default (don't override)
 
     if (instrumentParam) {
       setInstrument(instrumentParam);
-    }
-
-    if (targetMode === 'historical' && dateParam) {
-      setDate(dateParam);
-    } else if (targetMode === 'live') {
-      setDate(getISTToday());
     }
 
     if (expiryParam) {
@@ -142,7 +130,7 @@ export const useGreeksUrlSync = () => {
     }
 
     setInitialized(true);
-  }, [searchParams, isInitialized, setInstrument, setExpiry, setMode, setDate, setInitialized]);
+  }, []); // Empty deps - only run once on mount
 
   // Update URL when state changes
   useEffect(() => {
