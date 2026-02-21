@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, ChevronDownIcon, Info } from "lucide-react";
+import { ChevronDownIcon, Info } from "lucide-react";
 
 import {
   Select,
@@ -24,7 +24,8 @@ import {
 
 import { useDashboardMetadata } from "@/hooks/useDashboardMetadata";
 import { useDashboardFilterStore } from "@/store/dashboardFilterStore";
-import { cn, isPreMarketHours, isHistoricalOnlyHours } from "@/lib/utils";
+import { cn, isPreMarketHours, isHistoricalOnlyHours, isMarketOpen } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
 
 export function DashboardFilters() {
   const {
@@ -89,141 +90,155 @@ export function DashboardFilters() {
   }, [expiries, expiry, isInitialized, setExpiry]);
 
   return (
-    <div className="flex flex-wrap items-end gap-4 py-4">
-      {/* Data Mode Toggle */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Label className="text-xs font-medium">Mode</Label>
-          {isHistoricalOnlyHours() && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="w-3 h-3 text-muted-foreground cursor-default" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Live mode available at 9:00 AM</p>
-              </TooltipContent>
-            </Tooltip>
+    <div className="flex flex-wrap w-full gap-12 py-4">
+      <Card className="w-full">
+        <div className="flex flex-row items-center gap-16 px-8">
+          {/* Instrument Selector */}
+          <div className="space-y-2">
+            <Label className="text-sm font-normal ml-1">Instrument</Label>
+            <Select 
+              value={instrument}
+              onValueChange={setInstrument}
+              disabled={!isInitialized}
+            >
+              <SelectTrigger className="w-[120px] cursor-pointer text-sm">
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent>
+                {instruments.map((item: string) => (
+                  <SelectItem key={item} value={item}>
+                    {item}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+              
+          {/* Expiry Selector */}
+          <div className="space-y-2">
+            <Label className="text-sm font-normal ml-1">Expiry</Label>
+            <Select 
+              value={expiry} 
+              onValueChange={setExpiry}
+              disabled={!isInitialized || expiries.length === 0}
+            >
+              <SelectTrigger className="w-[140px] cursor-pointer text-sm">
+                <SelectValue placeholder={
+                  expiries.length === 0 
+                    ? "No expiry" 
+                    : "Select"
+                } />
+              </SelectTrigger>
+              <SelectContent>
+                {expiries.map((item: string) => (
+                  <SelectItem key={item} value={item}>
+                    {new Date(item).toLocaleDateString('en-GB', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+    
+          {/* Data Mode Toggle */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Label className="text-sm font-normal">Mode</Label>
+              {isHistoricalOnlyHours() && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="w-3 h-3 text-muted-foreground cursor-default" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {/* <p>Live mode available at 9:00 AM</p> */}
+                    <p>
+                      {isHistoricalOnlyHours() ? (
+                        "Historical only • Live at 9:00 AM"
+                      ) : mode === 'live' ? (
+                        isPreMarketHours() ? (
+                          "Pre-market • Opens 9:15 AM"
+                        ) : "Live data"
+                      ) : (
+                        `Historical • ${date}`
+                      )}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="historical"
+                checked={isHistorical}
+                onCheckedChange={handleModeChange}
+                disabled={!isInitialized || isHistoricalOnlyHours()}
+                className="cursor-pointer"
+              />
+              <Label htmlFor="historical" className="text-sm">Historical</Label>
+            </div>
+            {/* Status indicator */}
+            {/* <div className="text-xs text-gray-500 pb-2">
+              {!isInitialized ? (
+                "Initializing..."
+              ) : isHistoricalOnlyHours() ? (
+                "Historical only • Live at 9:00 AM"
+              ) : mode === 'live' ? (
+                isPreMarketHours() ? (
+                  "Pre-market • Opens 9:15 AM"
+                ) : "Live data"
+              ) : (
+                `Historical • ${date}`
+              )}
+            </div> */}
+          </div>
+            
+          {/* Date Picker (only in historical mode) */}
+          {isHistorical && (
+            <div className="space-y-2">
+              <Label className="text-sm font-normal ml-1">Date</Label>
+              <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[140px] justify-between text-left font-normal cursor-pointer text-sm",
+                      !selectedDate && "text-muted-foreground"
+                    )}
+                    disabled={!isInitialized || availableDates.length === 0}
+                  >
+                    {selectedDate ? format(selectedDate, "yyyy-MM-dd") : "Pick date"}
+                    <ChevronDownIcon className="h-4 w-4 text-neutral-500"/>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    defaultMonth={selectedDate}
+                    captionLayout="dropdown"
+                    onSelect={(d) => {
+                      if (d) {
+                        setDate(format(d, "yyyy-MM-dd"));
+                        setIsPopoverOpen(false);
+                      }
+                    }}
+                    modifiers={{
+                      available: (day) =>
+                        availableDates.includes(format(day, "yyyy-MM-dd")),
+                    }}
+                    disabled={(day) =>
+                      !availableDates.includes(format(day, "yyyy-MM-dd"))
+                    }
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           )}
         </div>
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="historical"
-            checked={isHistorical}
-            onCheckedChange={handleModeChange}
-            disabled={!isInitialized || isHistoricalOnlyHours()}
-            className="cursor-pointer"
-          />
-          <Label htmlFor="historical" className="text-sm">Historical</Label>
-        </div>
-      </div>
-
-      {/* Date Picker (only in historical mode) */}
-      {isHistorical && (
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Date</Label>
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-[140px] justify-between text-left font-normal cursor-pointer text-sm",
-                  !selectedDate && "text-muted-foreground"
-                )}
-                disabled={!isInitialized || availableDates.length === 0}
-              >
-                {selectedDate ? format(selectedDate, "yyyy-MM-dd") : "Pick date"}
-                <ChevronDownIcon className="h-4 w-4 text-neutral-500"/>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                defaultMonth={selectedDate}
-                captionLayout="dropdown"
-                onSelect={(d) => {
-                  if (d) {
-                    setDate(format(d, "yyyy-MM-dd"));
-                    setIsPopoverOpen(false);
-                  }
-                }}
-                modifiers={{
-                  available: (day) =>
-                    availableDates.includes(format(day, "yyyy-MM-dd")),
-                }}
-                disabled={(day) =>
-                  !availableDates.includes(format(day, "yyyy-MM-dd"))
-                }
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
-
-      {/* Instrument Selector */}
-      <div className="space-y-2">
-        <Label className="text-xs font-medium">Instrument</Label>
-        <Select 
-          value={instrument}
-          onValueChange={setInstrument}
-          disabled={!isInitialized}
-        >
-          <SelectTrigger className="w-[120px] cursor-pointer text-sm">
-            <SelectValue placeholder="Select" />
-          </SelectTrigger>
-          <SelectContent>
-            {instruments.map((item: string) => (
-              <SelectItem key={item} value={item}>
-                {item}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Expiry Selector */}
-      <div className="space-y-2">
-        <Label className="text-xs font-medium">Expiry</Label>
-        <Select 
-          value={expiry} 
-          onValueChange={setExpiry}
-          disabled={!isInitialized || expiries.length === 0}
-        >
-          <SelectTrigger className="w-[140px] cursor-pointer text-sm">
-            <SelectValue placeholder={
-              expiries.length === 0 
-                ? "No expiry" 
-                : "Select"
-            } />
-          </SelectTrigger>
-          <SelectContent>
-            {expiries.map((item: string) => (
-              <SelectItem key={item} value={item}>
-                {new Date(item).toLocaleDateString('en-GB', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric'
-                })}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Status indicator */}
-      <div className="text-xs text-gray-500 ml-auto self-center pb-2">
-        {!isInitialized ? (
-          "Initializing..."
-        ) : isHistoricalOnlyHours() ? (
-          "Historical only • Live at 9:00 AM"
-        ) : mode === 'live' ? (
-          isPreMarketHours() ? (
-            "Pre-market • Opens 9:15 AM"
-          ) : "Live data"
-        ) : (
-          `Historical • ${date}`
-        )}
-      </div>
+      </Card>
     </div>
   );
 }

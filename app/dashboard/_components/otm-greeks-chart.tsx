@@ -78,14 +78,14 @@ export const OtmGreeksChart = () => {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="vega" className="w-full">
-          <TabsList className="grid grid-cols-3 w-full">
+          <TabsList className="grid grid-cols-3 w-full mb-4">
             <TabsTrigger value="vega">Vega</TabsTrigger>
             <TabsTrigger value="theta">Theta</TabsTrigger>
             <TabsTrigger value="delta">Delta</TabsTrigger>
           </TabsList>
 
           <TabsContent value="vega" >
-            <ChartContainer config={vegaConfig} className="h-72 w-full">
+            <ChartContainer config={vegaConfig} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={transformedData}>
                   <CartesianGrid />
@@ -126,7 +126,7 @@ export const OtmGreeksChart = () => {
           </TabsContent>
 
           <TabsContent value="theta">
-            <ChartContainer config={thetaConfig} className="h-72 w-full">
+            <ChartContainer config={thetaConfig} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={transformedData}>
                   <CartesianGrid />
@@ -167,7 +167,7 @@ export const OtmGreeksChart = () => {
           </TabsContent>
 
           <TabsContent value="delta">
-            <ChartContainer config={deltaConfig} className="h-72 w-full">
+            <ChartContainer config={deltaConfig} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={transformedData}>
                   <CartesianGrid />

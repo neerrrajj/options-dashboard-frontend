@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Options Dashboard",
+  title: "StrikeZone",
   description: "Options analytics dashboard",
 };
 
