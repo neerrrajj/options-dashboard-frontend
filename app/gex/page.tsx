@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from "react";
 import { GexChart } from "./_components/gex-chart";
 import { GexFilters } from "./_components/gex-filters";
 import { useGexUrlSync } from "@/hooks/useUrlSync";
@@ -7,7 +8,7 @@ import { useGexFilterStore } from "@/store/gexFilterStore";
 import { useGexMetadata } from "@/hooks/useGexMetadata";
 import { useGexAutoSwitch } from "@/hooks/useAutoSwitchToHistorical";
 
-const GexAnalysis = () => {
+const GexAnalysisContent = () => {
   // Sync store with URL params
   useGexUrlSync();
   
@@ -30,6 +31,14 @@ const GexAnalysis = () => {
       </div>
       <GexChart />
     </div>
+  );
+};
+
+const GexAnalysis = () => {
+  return (
+    <Suspense fallback={<div className="container mx-auto px-4 py-6">Loading...</div>}>
+      <GexAnalysisContent />
+    </Suspense>
   );
 };
 

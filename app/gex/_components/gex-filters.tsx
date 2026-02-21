@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, ChevronDownIcon } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronDownIcon, Info } from "lucide-react";
 
 import {
   Card,
@@ -22,10 +22,15 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import { useGexMetadata } from "@/hooks/useGexMetadata";
 import { useGexFilterStore } from "@/store/gexFilterStore";
-import { cn, isBeforeMarketOpen, isMarketOpen } from "@/lib/utils";
+import { cn, isBeforeMarketOpen, isMarketOpen, isPreMarketHours, isHistoricalOnlyHours } from "@/lib/utils";
 
 export function GexFilters() {
   const {
@@ -56,18 +61,15 @@ export function GexFilters() {
     const newMode = val ? "historical" : "live";
     setMode(newMode);
     
-    // Clear date when switching to historical so auto-select works
-    if (newMode === "historical") {
-      setDate("");
-      setExpiry("");
-    } else {
-      // When switching to live, clear date (will use today)
+    // When switching to live, clear date (will use today)
+    if (newMode === "live") {
       setDate("");
       setExpiry("");
     }
+    // When switching to historical, keep any existing date or let auto-select pick one
   };
 
-  // Auto-select latest available date when switching to historical
+  // Auto-select latest available date when in historical mode with no date
   useEffect(() => {
     console.log('[GexFilters] Date auto-select effect:', { isHistorical, availableDatesLength: availableDates.length, date });
     if (isHistorical && availableDates.length > 0 && !date) {
@@ -75,7 +77,7 @@ export function GexFilters() {
       console.log('[GexFilters] Auto-selecting date:', latestDate);
       setDate(latestDate);
     }
-  }, [isHistorical, availableDates, date, setDate]);
+  }, [isHistorical, availableDates.length, date, setDate]);
 
   // Auto-select instrument when date changes in historical mode
   useEffect(() => {
@@ -109,13 +111,15 @@ export function GexFilters() {
           
           {/* Market Status Badge */}
           <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-            isBeforeMarketOpen()
+            isHistoricalOnlyHours()
+              ? 'bg-red-100 text-red-800'
+              : isPreMarketHours()
               ? 'bg-yellow-100 text-yellow-800' 
               : isMarketOpen()
               ? 'bg-green-100 text-green-800' 
               : 'bg-red-100 text-red-800'
           }`}>
-            {isBeforeMarketOpen() ? 'Pre-Market' : isMarketOpen() ? 'Market Open' : 'Market Closed'}
+            {isHistoricalOnlyHours() ? 'Market Closed' : isPreMarketHours() ? 'Pre-Market' : isMarketOpen() ? 'Market Open' : 'Market Closed'}
           </div>
         </CardTitle>
       </CardHeader>
@@ -124,13 +128,25 @@ export function GexFilters() {
           <div className="grid grid-cols-2 gap-4">
             {/* Historical Toggle */}
             <div className="cols-span-1 space-y-4">
-              <Label>Data Mode</Label>
+              <div className="flex items-center gap-2">
+                <Label>Data Mode</Label>
+                {isHistoricalOnlyHours() && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="w-4 h-4 text-muted-foreground cursor-default" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Live mode available at 9:00 AM</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
               <div className="flex items-center space-x-2">
                 <Switch
                   id="historical"
                   checked={isHistorical}
                   onCheckedChange={handleModeChange}
-                  disabled={!isInitialized}
+                  disabled={!isInitialized || isHistoricalOnlyHours()}
                   className="cursor-pointer"
                 />
                 <Label htmlFor="historical">Historical</Label>
@@ -238,9 +254,11 @@ export function GexFilters() {
         <div className="text-sm text-gray-500 px-6 mt-2">
           {!isInitialized ? (
             "Initializing filters..."
+          ) : isHistoricalOnlyHours() ? (
+            "Historical mode only • Live available at 9:00 AM"
           ) : mode === 'live' ? (
-            isBeforeMarketOpen() ? (
-              "Market hasn't opened yet • Check at 9:15 AM"
+            isPreMarketHours() ? (
+              "Pre-market • Market opens at 9:15 AM"
             ) : isMarketOpen() ? (
               "Live data • Auto-refreshing during market hours"
             ) : (

@@ -26,11 +26,6 @@ import { useGexDayData } from '@/hooks/useGexDayData';
 import { useGexSummary } from '@/hooks/useGexSummary';
 import { formatNumber, formatTime } from '@/lib/utils';
 
-interface TimeRange {
-  start: string;
-  end: string;
-}
-
 export const GexChart = () => {
   const [visibleCharts, setVisibleCharts] = useState({
     oi: false,
@@ -67,7 +62,7 @@ export const GexChart = () => {
       const selectedTime = timestamps[selectedTimeIndex];
 
       // Find the summary data for the selected timestamp
-      const summaryForTime = summaryData.find(item => item.ist_minute === selectedTime);
+      const summaryForTime = summaryData.find((item: { ist_minute: string; total_net_gex?: number }) => item.ist_minute === selectedTime);
 
       setTotalNetGex(summaryForTime?.total_net_gex || null);
     }
@@ -146,10 +141,6 @@ export const GexChart = () => {
 
     setSelectedTimeIndex(actualLatestIndex);
     setTempSelectedTimeIndex(actualLatestIndex);
-    setTimeRange({
-      start: timestamps[actualLatestIndex],
-      end: timestamps[actualLatestIndex]
-    });
   };
 
   // useEffect(() => {
@@ -253,8 +244,8 @@ export const GexChart = () => {
   };
 
   const gradientOffset = () => {
-    const dataMax = Math.max(...summaryData.map((i) => i.total_net_gex));
-    const dataMin = Math.min(...summaryData.map((i) => i.total_net_gex));
+    const dataMax = Math.max(...summaryData.map((i: { total_net_gex?: number }) => i.total_net_gex || 0));
+    const dataMin = Math.min(...summaryData.map((i: { total_net_gex?: number }) => i.total_net_gex || 0));
 
     if (dataMax <= 0) {
       return 0;
@@ -269,8 +260,9 @@ export const GexChart = () => {
   const off = gradientOffset();
 
   const tickBuckets = summaryData
-    .map((d) => d.ist_minute)
-    .filter((t) => {
+    .map((d: { ist_minute?: string }) => d.ist_minute)
+    .filter((t: string | undefined): t is string => {
+      if (!t) return false;
       const date = new Date(t);
       return date.getMinutes() % 15 === 0 && date.getSeconds() === 0;
     })
@@ -605,7 +597,7 @@ export const GexChart = () => {
   );
 };
 
-const CustomChartTooltipContent = ({ payload }) => {
+const CustomChartTooltipContent = ({ payload }: { payload?: any[] }) => {
   if (!payload || payload.length === 0) return null;
   const data = payload[0].payload;
   const strike = data.strike
@@ -614,7 +606,7 @@ const CustomChartTooltipContent = ({ payload }) => {
     <div className="rounded-md border bg-background p-2 shadow-sm text-xs space-y-1">
       <div className="font-lg font-bold text-primary">{strike}</div>
 
-      {payload.map((entry, index) => {
+      {payload.map((entry: any, index: number) => {
         // For Net GEX, use dynamic color based on value
         let textColor = entry.color;
         if (entry.name === "Net GEX" || entry.dataKey === "net_gex") {
@@ -634,7 +626,7 @@ const CustomChartTooltipContent = ({ payload }) => {
   );
 };
 
-const NetGexChartTooltipContent = ({ payload }) => {
+const NetGexChartTooltipContent = ({ payload }: { payload?: any[] }) => {
   if (!payload || payload.length === 0) return null;
   const data = payload[0].payload;
 
@@ -649,7 +641,7 @@ const NetGexChartTooltipContent = ({ payload }) => {
     <div className="rounded-md border bg-background p-2 shadow-sm text-xs space-y-1">
       <div className="font-lg font-bold text-primary">{label}</div>
 
-      {payload.map((entry, index) => {
+      {payload.map((entry: any, index: number) => {
         const isPositive = entry.value >= 0;
         const dynamicColor = isPositive ? "hsl(142, 76%, 50%)" : "hsl(346, 87%, 50%)";
         return (
@@ -663,7 +655,15 @@ const NetGexChartTooltipContent = ({ payload }) => {
   );
 };
 
-const CustomLegend = ({ config, visibleCharts, handleChartToggle }) => {
+const CustomLegend = ({ 
+  config, 
+  visibleCharts, 
+  handleChartToggle 
+}: { 
+  config: { call_oi: { color: string }; call_volume: { color: string }; net_gex_negative: { color: string }; abs_gex: { color: string } }; 
+  visibleCharts: { oi: boolean; vol: boolean; net_gex: boolean; abs_gex: boolean }; 
+  handleChartToggle: (key: string) => void;
+}) => {
   const legendItems = [
     { key: 'oi', label: 'OI', active: visibleCharts.oi },
     { key: 'vol', label: 'Volume', active: visibleCharts.vol },

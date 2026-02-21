@@ -22,11 +22,13 @@ interface GreeksFilterState {
   }) => void;
 }
 
+const defaultMode = isBeforeMarketOpen() ? 'historical' : 'live';
+
 export const useGreeksFilterStore = create<GreeksFilterState>((set, get) => ({
   instrument: 'NIFTY',
   expiry: '',
-  mode: isBeforeMarketOpen() ? 'historical' : 'live',
-  date: getISTToday(),
+  mode: defaultMode,
+  date: defaultMode === 'historical' ? '' : getISTToday(),
   isInitialized: false,
   
   setInstrument: (instrument) => {

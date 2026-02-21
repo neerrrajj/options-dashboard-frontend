@@ -13,8 +13,9 @@ export const NetGexChart = () => {
   };
 
   const tickBuckets = summaryData
-    .map((d) => d.ist_minute)
-    .filter((t) => {
+    .map((d: { ist_minute?: string }) => d.ist_minute)
+    .filter((t: string | undefined): t is string => {
+      if (!t) return false;
       const date = new Date(t);
       return date.getMinutes() % 15 === 0 && date.getSeconds() === 0;
     })

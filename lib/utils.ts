@@ -21,12 +21,21 @@ const HOLIDAYS = [
 ];
 
 export function getISTNow(): Date {
-  return new Date(Date.now());
+  // Create a date in IST timezone
+  const now = new Date();
+  const istString = now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+  return new Date(istString);
 }
 
 export function getISTToday(): string {
-  const nowIST = getISTNow();
-  return nowIST.toISOString().slice(0, 10);
+  const now = new Date();
+  // Format date in IST timezone as YYYY-MM-DD
+  return now.toLocaleDateString("en-CA", { 
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  });
 }
 
 export function isWithinISTHours(start: string, end: string): boolean {
@@ -62,9 +71,38 @@ export function isBeforeMarketOpen(): boolean {
   const hours = istTime.getHours();
   const minutes = istTime.getMinutes();
   const currentTime = hours * 60 + minutes;
-  const marketOpenTime = 9 * 60 + 15;
+  const marketOpenTime = 9 * 60; // 9:00 AM - before this is "historical only" time
   
   return currentTime < marketOpenTime;
+}
+
+export function isPreMarketHours(): boolean {
+  const now = new Date();
+  const istTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+  const hours = istTime.getHours();
+  const minutes = istTime.getMinutes();
+  const currentTime = hours * 60 + minutes;
+  const preMarketStart = 9 * 60; // 9:00 AM
+  const marketOpenTime = 9 * 60 + 15; // 9:15 AM
+  
+  return currentTime >= preMarketStart && currentTime < marketOpenTime;
+}
+
+export function isHistoricalOnlyHours(): boolean {
+  const nowIST = getISTNow();
+  
+  // Weekends and holidays are always historical only
+  if (!isTradingDay(nowIST)) {
+    return true;
+  }
+  
+  // Before 9:00 AM is historical only
+  const hours = nowIST.getHours();
+  const minutes = nowIST.getMinutes();
+  const currentTime = hours * 60 + minutes;
+  const preMarketStart = 9 * 60; // 9:00 AM
+  
+  return currentTime < preMarketStart;
 }
 
 export const formatNumber = (value: number) => {
