@@ -55,12 +55,25 @@ export function GexFilters() {
   const handleModeChange = (val: boolean) => {
     const newMode = val ? "historical" : "live";
     setMode(newMode);
+    
+    // Clear date when switching to historical so auto-select works
+    if (newMode === "historical") {
+      setDate("");
+      setExpiry("");
+    } else {
+      // When switching to live, clear date (will use today)
+      setDate("");
+      setExpiry("");
+    }
   };
 
   // Auto-select latest available date when switching to historical
   useEffect(() => {
+    console.log('[GexFilters] Date auto-select effect:', { isHistorical, availableDatesLength: availableDates.length, date });
     if (isHistorical && availableDates.length > 0 && !date) {
-      setDate(availableDates[availableDates.length - 1]);
+      const latestDate = availableDates[availableDates.length - 1];
+      console.log('[GexFilters] Auto-selecting date:', latestDate);
+      setDate(latestDate);
     }
   }, [isHistorical, availableDates, date, setDate]);
 
