@@ -1,9 +1,9 @@
 'use client'
 
 import useSWR from 'swr';
-import { fetchGreeksMetadata } from '@/lib/api/greeks';
+import { fetchGexMetadata } from '@/lib/api/gex';
 
-export const useGreeksMetadata = ({
+export const useGexMetadata = ({
   instrument,
   live,
   date
@@ -13,8 +13,8 @@ export const useGreeksMetadata = ({
   date?: string;
 }) => {
   const { data, error, isLoading } = useSWR(
-    ['greeks-metadata', instrument, live ? '1' : '0', date || ''],
-    () => fetchGreeksMetadata({ instrument, live, date }),
+    ['gex-metadata', instrument, live ? '1' : '0', date || ''],
+    () => fetchGexMetadata({ instrument, live, date }),
     {
       revalidateOnFocus: false,
       dedupingInterval: 30000,

@@ -4,7 +4,7 @@ import { getISTToday, isBeforeMarketOpen } from '@/lib/utils';
 
 type Mode = 'live' | 'historical';
 
-interface GreeksFilterState {
+interface GexFilterState {
   instrument: string;
   expiry: string;
   mode: Mode;
@@ -22,7 +22,7 @@ interface GreeksFilterState {
   }) => void;
 }
 
-export const useGreeksFilterStore = create<GreeksFilterState>((set, get) => ({
+export const useGexFilterStore = create<GexFilterState>((set, get) => ({
   instrument: 'NIFTY',
   expiry: '',
   mode: isBeforeMarketOpen() ? 'historical' : 'live',

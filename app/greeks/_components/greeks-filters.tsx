@@ -108,7 +108,7 @@ export function GreeksFilters() {
       </CardHeader>
       <CardContent>
         <div className="grid grid-rows-2 gap-6">
-          <div className="grid grid-cols-2">
+          <div className="grid grid-cols-2 gap-4">
             {/* Historical Toggle */}
             <div className="cols-span-1 space-y-4">
               <Label>Data Mode</Label>

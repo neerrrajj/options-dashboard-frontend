@@ -37,17 +37,17 @@ export const useGreeksSummary = () => {
     }
   );
 
-  console.log('useGreeksSummary state:', {
-    shouldFetch,
-    isInitialized,
-    instrument,
-    expiry,
-    date,
-    effectiveDate,
-    mode,
-    shouldPoll,
-    dataLength: data?.length || 0
-  });
+  // console.log('useGreeksSummary state:', {
+  //   shouldFetch,
+  //   isInitialized,
+  //   instrument,
+  //   expiry,
+  //   date,
+  //   effectiveDate,
+  //   mode,
+  //   shouldPoll,
+  //   dataLength: data?.length || 0
+  // });
 
   return { 
     data: data || [], 

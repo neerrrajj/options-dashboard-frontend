@@ -4,22 +4,22 @@ import { useEffect } from "react";
 import useSWR from "swr";
 
 import { isBeforeMarketOpen } from "@/lib/utils";
-import { fetchGreeksDefaults } from "@/lib/api/greeks";
-import { useGreeksFilterStore } from "@/store/greeksFilterStore";
+import { fetchGexDefaults } from "@/lib/api/gex";
+import { useGexFilterStore } from "@/store/gexFilterStore";
 
-export const useGreeksAutoInitialize = () => {
+export const useGexAutoInitialize = () => {
   const { 
     mode, 
     isInitialized, 
     initializeDefaults 
-  } = useGreeksFilterStore();
+  } = useGexFilterStore();
 
   // Get defaults based on current mode
   const effectiveMode = (mode === 'live' && isBeforeMarketOpen()) ? 'historical' : mode;
 
   const { data: defaults, isLoading: defaultsLoading } = useSWR(
     !isInitialized ? ['defaults', effectiveMode === 'live' ? '1' : '0'] : null,
-    () => fetchGreeksDefaults({ live: effectiveMode === 'live' }),
+    () => fetchGexDefaults({ live: effectiveMode === 'live' }),
     { 
       revalidateOnFocus: false,
       dedupingInterval: 30000

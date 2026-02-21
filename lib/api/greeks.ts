@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-export async function fetchDefaults(params: {
+export async function fetchGreeksDefaults(params: {
   instrument?: string;
   live?: boolean;
 }) {
@@ -12,7 +12,7 @@ export async function fetchDefaults(params: {
   return res.data;
 }
 
-export async function fetchMetadata(params: {
+export async function fetchGreeksMetadata(params: {
   instrument?: string;
   live?: boolean;
   date?: string;
@@ -22,17 +22,6 @@ export async function fetchMetadata(params: {
   });
   return res.data;
 }
-
-// export async function fetchMetadata(params: {
-//   instrument?: string;
-//   expiry?: string;
-//   live?: boolean;
-// }) {
-//   const res = await axios.get(`${API_BASE}/api/greeks/metadata`, {
-//     params,
-//   });
-//   return res.data;
-// }
 
 export const fetchGreeksSummary = async ({
   instrument,

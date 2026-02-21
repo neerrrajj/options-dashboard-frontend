@@ -1,4 +1,5 @@
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from "recharts";
+import { format } from 'date-fns';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -39,8 +40,6 @@ export const GreeksChart = () => {
     otm_put_vega: first.otm_put_vega - d.otm_put_vega,
   }));
 
-  console.log("transformed data:", transformedData)
-
   const vegaConfig = {
     otm_call_vega: { label: "Call Vega", color: "hsl(142, 76%, 36%)" },
     otm_put_vega: { label: "Put Vega", color: "hsl(346, 87%, 43%)" },
@@ -64,14 +63,20 @@ export const GreeksChart = () => {
     })
     .slice(1);
 
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Intraday change in OTM Greeks</CardTitle>
+        <CardTitle className="flex items-center justify-between">
+          <span>Intraday change in OTM Greeks</span>
+            {first?.ist_minute && (
+              <span className="text-xs text-muted-foreground mr-2">
+                {format(new Date(first.ist_minute), 'EEE, dd MMM yyyy')}
+              </span>
+            )}
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="vega" className="w-full border-1">
+        <Tabs defaultValue="vega" className="w-full">
           <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="vega">Vega</TabsTrigger>
             <TabsTrigger value="theta">Theta</TabsTrigger>
@@ -82,6 +87,7 @@ export const GreeksChart = () => {
             <ChartContainer config={vegaConfig} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={transformedData}>
+                  <CartesianGrid />
                   <XAxis
                     dataKey="ist_minute"
                     tick={{ fontSize: 12 }}
@@ -94,7 +100,7 @@ export const GreeksChart = () => {
                       })
                     }
                   />
-                  <YAxis tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} width={40} />
                   <ChartTooltip content={<ChartTooltipContent labelFormatter={(label) =>
                     new Date(label).toLocaleTimeString('en-IN', {
                       hour: '2-digit',
@@ -122,6 +128,7 @@ export const GreeksChart = () => {
             <ChartContainer config={thetaConfig} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={transformedData}>
+                  <CartesianGrid />
                   <XAxis
                     dataKey="ist_minute"
                     tick={{ fontSize: 12 }}
@@ -134,7 +141,7 @@ export const GreeksChart = () => {
                       })
                     }
                   />
-                  <YAxis tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} width={40} />
                   <ChartTooltip content={<ChartTooltipContent labelFormatter={(label) =>
                     new Date(label).toLocaleTimeString('en-IN', {
                       hour: '2-digit',
@@ -162,6 +169,7 @@ export const GreeksChart = () => {
             <ChartContainer config={deltaConfig} className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={transformedData}>
+                  <CartesianGrid />
                   <XAxis
                     dataKey="ist_minute"
                     tick={{ fontSize: 12 }}
@@ -174,7 +182,7 @@ export const GreeksChart = () => {
                       })
                     }
                   />
-                  <YAxis tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} width={40} />
                   <ChartTooltip content={<ChartTooltipContent labelFormatter={(label) =>
                     new Date(label).toLocaleTimeString('en-IN', {
                       hour: '2-digit',
