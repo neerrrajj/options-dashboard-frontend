@@ -7,12 +7,11 @@ import {
     NavigationMenuList,
 } from "@/components/ui/navigation-menu"
 import { ThemeToggle } from "@/components/theme-toggle";
+import { isHistoricalOnlyHours, isPreMarketHours, isMarketOpen } from "@/lib/utils";
 
 export const Navbar = () => {
-
     const navItems = [
-        { path: "/gex", label: "GEX Analysis" },
-        { path: "/greeks", label: "Greeks Analysis" },
+        { path: "/dashboard", label: "Dashboard" },
     ];
 
     return (
@@ -37,7 +36,21 @@ export const Navbar = () => {
                             </NavigationMenuList>
                         </NavigationMenu>
                     </div>
-                    <ThemeToggle />
+                    <div className="flex items-center space-x-4">
+                        {/* Market Status Badge */}
+                        <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            isHistoricalOnlyHours()
+                                ? 'bg-red-100 text-red-800'
+                                : isPreMarketHours()
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : isMarketOpen()
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                        }`}>
+                            {isHistoricalOnlyHours() ? 'Market Closed' : isPreMarketHours() ? 'Pre-Market' : isMarketOpen() ? 'Market Open' : 'Market Closed'}
+                        </div>
+                        <ThemeToggle />
+                    </div>
                 </div>
             </div>
         </nav>
