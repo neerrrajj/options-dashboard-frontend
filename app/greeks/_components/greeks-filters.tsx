@@ -146,7 +146,7 @@ export function GreeksFilters() {
                     <Calendar
                       mode="single"
                       selected={selectedDate}
-                      month={selectedDate}
+                      defaultMonth={selectedDate}
                       captionLayout="dropdown"
                       onSelect={(d) => {
                         if (d) {

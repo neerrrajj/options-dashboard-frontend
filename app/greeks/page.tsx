@@ -1,13 +1,16 @@
 'use client'
 
-import { useGreeksAutoInitialize } from "@/hooks/useGreeksAutoInitialize";
+import { useGreeksUrlSync } from "@/hooks/useUrlSync";
 import { GreeksFilters } from "./_components/greeks-filters";
 import { GreeksMetrics } from "./_components/greeks-metrics";
 import { GreeksChart } from "./_components/greeks-chart";
+import { useGreeksFilterStore } from "@/store/greeksFilterStore";
 
 const GreeksAnalysis = () => {
-
-  const { isInitialized } = useGreeksAutoInitialize();
+  // Sync store with URL params
+  useGreeksUrlSync();
+  
+  const { isInitialized } = useGreeksFilterStore();
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">

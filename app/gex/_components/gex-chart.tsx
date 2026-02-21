@@ -383,7 +383,10 @@ export const GexChart = () => {
                     orientation="right"
                     hide={true}
                   />
-                  <ChartTooltip content={<CustomChartTooltipContent />} />
+                  <ChartTooltip 
+                    content={<CustomChartTooltipContent />}
+                    wrapperStyle={{ zIndex: 100 }}
+                  />
                   {/* <ReferenceLine yAxisId="left" y={0} stroke="#666" strokeDasharray="3 3" /> */}
 
                   {/* Area Charts */}
@@ -572,7 +575,10 @@ export const GexChart = () => {
                   width={60}
                   tickFormatter={formatNumber}
                 />
-                <ChartTooltip content={<NetGexChartTooltipContent />} />
+                <ChartTooltip 
+                  content={<NetGexChartTooltipContent />}
+                  wrapperStyle={{ zIndex: 100 }}
+                />
                 <defs>
                   <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="hsl(142, 76%, 50%)" stopOpacity={0.1} />
@@ -605,14 +611,22 @@ const CustomChartTooltipContent = ({ payload }) => {
   const strike = data.strike
 
   return (
-    <div className="rounded-md border bg-background p-2 shadow-sm text-xs space-y-1 z-50">
+    <div className="rounded-md border bg-background p-2 shadow-sm text-xs space-y-1">
       <div className="font-lg font-bold text-primary">{strike}</div>
 
       {payload.map((entry, index) => {
+        // For Net GEX, use dynamic color based on value
+        let textColor = entry.color;
+        if (entry.name === "Net GEX" || entry.dataKey === "net_gex") {
+          textColor = entry.value >= 0 ? "hsl(142, 76%, 50%)" : "hsl(346, 87%, 50%)";
+        }
+        
         return (
           <div key={index} className="flex justify-between gap-4">
-            <span style={{ color: entry.color }}>{entry.name}</span>
-            <span className='text-foreground font-mono font-medium tabular-nums'>{formatNumber(entry.value)}</span>
+            <span style={{ color: textColor }}>{entry.name}</span>
+            <span className='font-mono font-medium tabular-nums' style={{ color: textColor }}>
+              {formatNumber(entry.value)}
+            </span>
           </div>
         )
       })}
@@ -632,7 +646,7 @@ const NetGexChartTooltipContent = ({ payload }) => {
   }
 
   return (
-    <div className="rounded-md border bg-background p-2 shadow-sm text-xs space-y-1 -z-50">
+    <div className="rounded-md border bg-background p-2 shadow-sm text-xs space-y-1">
       <div className="font-lg font-bold text-primary">{label}</div>
 
       {payload.map((entry, index) => {
@@ -641,7 +655,7 @@ const NetGexChartTooltipContent = ({ payload }) => {
         return (
           <div key={index} className="flex justify-between gap-4">
             <span style={{ color: dynamicColor }}>{entry.name}</span>
-            <span className='text-foreground font-mono font-medium tabular-nums'>{formatNumber(entry.value)}</span>
+            <span className='text-foreground font-mono font-medium tabular-nums' style={{ color: dynamicColor }}>{formatNumber(entry.value)}</span>
           </div>
         )
       })}
