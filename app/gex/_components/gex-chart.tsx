@@ -21,8 +21,9 @@ import { Slider } from '@/components/ui/slider';
 import { ChartTooltip, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { useAvailableTimestamps, useGexData } from '@/hooks/useGexData';
-import { useGreeksSummary } from '@/hooks/useGreeksSummary';
+import { useAvailableTimestamps } from '@/hooks/useGexData';
+import { useGexDayData } from '@/hooks/useGexDayData';
+import { useGexSummary } from '@/hooks/useGexSummary';
 import { formatNumber, formatTime } from '@/lib/utils';
 
 interface TimeRange {
@@ -38,7 +39,6 @@ export const GexChart = () => {
     abs_gex: true,
   });
 
-  const [timeRange, setTimeRange] = useState<TimeRange | undefined>();
   const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(0);
   const [tempSelectedTimeIndex, setTempSelectedTimeIndex] = useState<number>(0);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -46,18 +46,20 @@ export const GexChart = () => {
   const [isSliderActive, setIsSliderActive] = useState(false);
 
   const { timestamps, latestTimestamp, isLoading: timestampsLoading } = useAvailableTimestamps();
-  const { data, isLoading, error } = useGexData(timeRange);
-  const { data: summaryData, isLoading: isSummaryLoading } = useGreeksSummary()
+  // Fetch full day data once - no API calls on slider movement
+  const { data: dayData, isLoading, error } = useGexDayData();
+  // Use GEX summary (not Greeks) for correct filters
+  const { data: summaryData, isLoading: isSummaryLoading } = useGexSummary();
   const [totalNetGex, setTotalNetGex] = useState<number | null>(null);
 
   const [initialStrikeRange, setInitialStrikeRange] = useState<{ min: number, max: number } | null>(null);
   const firstTimestamp = timestamps[0];
 
-  const { data: firstData } = useGexData(
-    firstTimestamp
-      ? { start: firstTimestamp, end: firstTimestamp }
-      : undefined
-  );
+  // Get first timestamp data from dayData (already fetched)
+  const firstData = useMemo(() => {
+    if (!dayData || !firstTimestamp) return [];
+    return dayData.filter(d => d.ist_minute === firstTimestamp);
+  }, [dayData, firstTimestamp]);
 
   // Extract total net GEX from summary data based on selected timestamp
   useEffect(() => {
@@ -71,21 +73,10 @@ export const GexChart = () => {
     }
   }, [summaryData, timestamps, selectedTimeIndex]);
 
-  // Debounced function to update time range
-  const debouncedSetTimeRange = useCallback(
-    debounce((timeIndex: number) => {
-      if (timestamps.length === 0) return;
-
-      const selectedTime = timestamps[timeIndex];
-
-      setTimeRange({
-        start: selectedTime,
-        end: selectedTime
-      });
-      setSelectedTimeIndex(timeIndex);
-    }, 100),
-    [timestamps]
-  );
+  // Simple function to update selected time index (no API calls)
+  const handleTimeIndexChange = useCallback((timeIndex: number) => {
+    setSelectedTimeIndex(timeIndex);
+  }, []);
 
   // Initialize slider to latest timestamp when data is available
   useEffect(() => {
@@ -95,10 +86,6 @@ export const GexChart = () => {
 
       setSelectedTimeIndex(actualLatestIndex);
       setTempSelectedTimeIndex(actualLatestIndex);
-      setTimeRange({
-        start: timestamps[actualLatestIndex],
-        end: timestamps[actualLatestIndex]
-      });
       setIsInitialized(true);
     }
   }, [timestamps, latestTimestamp, isInitialized]);
@@ -111,35 +98,31 @@ export const GexChart = () => {
 
       setSelectedTimeIndex(actualLatestIndex);
       setTempSelectedTimeIndex(actualLatestIndex);
-      setTimeRange({
-        start: timestamps[actualLatestIndex],
-        end: timestamps[actualLatestIndex]
-      });
       // Reset initial strike range for a new day
       console.log("clearing initial strike range..")
       setInitialStrikeRange(null);
     }
-  }, [timestamps, latestTimestamp]);
+  }, [timestamps, latestTimestamp, isInitialized]);
 
-  // Extract spot price from current data
+  // Extract spot price from day data
   useEffect(() => {
-    if (data && data.length > 0) {
-      const recentData = data.find(d => d.underlying_price != null);
+    if (dayData && dayData.length > 0) {
+      const recentData = dayData.find(d => d.underlying_price != null);
       if (recentData && recentData.underlying_price) {
         console.log("spot from effect: ", recentData.underlying_price)
         setSpotPrice(recentData.underlying_price);
       }
     }
-  }, [data]);
+  }, [dayData]);
 
-  // Handle slider changes
+  // Handle slider changes - no API calls, just filter client-side
   const handleSliderChange = (values: number[]) => {
     const timeIndex = values[0];
     setTempSelectedTimeIndex(timeIndex);
 
-    // Only trigger API call if slider is not being actively dragged
+    // Only update selected index if slider is not being actively dragged
     if (!isSliderActive) {
-      debouncedSetTimeRange(timeIndex);
+      handleTimeIndexChange(timeIndex);
     }
   };
 
@@ -151,7 +134,7 @@ export const GexChart = () => {
   // Handle slider interaction end
   const handleSliderEnd = () => {
     setIsSliderActive(false);
-    debouncedSetTimeRange(tempSelectedTimeIndex);
+    handleTimeIndexChange(tempSelectedTimeIndex);
   };
 
   // Reset to latest
@@ -217,12 +200,12 @@ export const GexChart = () => {
 
   // Process data for chart display with ATM filtering
   const chartData = useMemo(() => {
-    // if (!data || data.length === 0 || !spotPrice) return [];
-    if (!data || data.length === 0 || !initialStrikeRange) return [];
+    // if (!dayData || dayData.length === 0 || !spotPrice) return [];
+    if (!dayData || dayData.length === 0 || !initialStrikeRange) return [];
 
-    // Show data for the selected timestamp
+    // Show data for the selected timestamp (filter from already-fetched day data)
     const selectedTime = timestamps[selectedTimeIndex];
-    const processedData = data
+    const processedData = dayData
       .filter(d => d.ist_minute === selectedTime)
       .map(item => ({
         strike: item.strike,
@@ -252,7 +235,7 @@ export const GexChart = () => {
       item.strike >= initialStrikeRange.min &&
       item.strike <= initialStrikeRange.max
     );
-  }, [data, timestamps, selectedTimeIndex, spotPrice]);
+  }, [dayData, timestamps, selectedTimeIndex, spotPrice, initialStrikeRange]);
 
   const config = {
     call_oi: { label: "Call OI", color: "hsl(142, 76%, 50%)" },
