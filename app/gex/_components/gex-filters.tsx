@@ -146,6 +146,7 @@ export function GexFilters() {
                     <Calendar
                       mode="single"
                       selected={selectedDate}
+                      month={selectedDate}
                       captionLayout="dropdown"
                       onSelect={(d) => {
                         if (d) {
@@ -156,9 +157,6 @@ export function GexFilters() {
                       modifiers={{
                         available: (day) =>
                           availableDates.includes(format(day, "yyyy-MM-dd")),
-                      }}
-                      modifiersClassNames={{
-                        // available: "bg-secondary text-white cursor- hover:bg-white",
                       }}
                       disabled={(day) =>
                         !availableDates.includes(format(day, "yyyy-MM-dd"))

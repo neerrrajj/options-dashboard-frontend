@@ -3,7 +3,7 @@
 import useSWR from 'swr';
 
 import { useGexFilterStore } from '@/store/gexFilterStore';
-import { getISTToday, isWithinISTHours } from '@/lib/utils';
+import { getISTToday, isMarketOpen } from '@/lib/utils';
 import { fetchGreeksSummary } from '@/lib/api/greeks';
 
 /**
@@ -13,8 +13,8 @@ import { fetchGreeksSummary } from '@/lib/api/greeks';
 export const useGexSummary = () => {
   const { instrument, expiry, date, mode, isInitialized } = useGexFilterStore();
   const effectiveDate = mode === 'live' ? getISTToday() : date;
-  const istLiveWindow = isWithinISTHours('09:15', '23:30');
-  const shouldPoll = mode === 'live' && istLiveWindow;
+  // Only poll during market hours AND when tab is visible
+  const shouldPoll = mode === 'live' && isMarketOpen();
   
   const shouldFetch = isInitialized && instrument && expiry && (mode === 'live' || date);
 
@@ -29,6 +29,7 @@ export const useGexSummary = () => {
     {
       refreshInterval: shouldPoll ? 60000 : 0,
       revalidateOnFocus: true,
+      refreshWhenHidden: false, // Stop polling when tab is hidden
     }
   );
 

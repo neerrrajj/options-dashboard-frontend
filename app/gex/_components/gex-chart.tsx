@@ -605,7 +605,7 @@ const CustomChartTooltipContent = ({ payload }) => {
   const strike = data.strike
 
   return (
-    <div className="rounded-md border bg-background p-2 shadow-sm text-xs space-y-1 -z-50">
+    <div className="rounded-md border bg-background p-2 shadow-sm text-xs space-y-1 z-50">
       <div className="font-lg font-bold text-primary">{strike}</div>
 
       {payload.map((entry, index) => {

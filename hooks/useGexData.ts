@@ -3,14 +3,13 @@
 import useSWR from 'swr';
 
 import { useGexFilterStore } from '@/store/gexFilterStore';
-import { getISTToday, isWithinISTHours } from '@/lib/utils';
+import { getISTToday, isMarketOpen } from '@/lib/utils';
 import { fetchAvailableTimestamps, fetchGexData } from '@/lib/api/gex';
 
 export const useGexData = (timeRange?: { start: string; end: string }) => {
   const { instrument, expiry, date, mode, isInitialized } = useGexFilterStore();
-  const istMarketHours = isWithinISTHours('09:15', '15:30');
-  const istLiveWindow = isWithinISTHours('09:15', '23:30');
-  const shouldPoll = istMarketHours && mode === 'live' && !timeRange;
+  // Only poll during market hours AND when tab is visible
+  const shouldPoll = isMarketOpen() && mode === 'live' && !timeRange;
   const pollingInterval = 60000;
   const effectiveDate = mode === 'live' ? getISTToday() : date;
   
@@ -25,12 +24,13 @@ export const useGexData = (timeRange?: { start: string; end: string }) => {
       expiry,
       start_time: timeRange!.start,
       end_time: timeRange!.end,
-      live: mode === 'live' ? istLiveWindow : false
+      live: mode === 'live'
     }),
     {
       refreshInterval: shouldPoll ? pollingInterval : 0,
       revalidateOnFocus: true,
-      dedupingInterval: 0,
+      refreshWhenHidden: false, // Stop polling when tab is hidden
+      dedupingInterval: 5000,
       errorRetryCount: 3,
       errorRetryInterval: 5000,
     }
@@ -51,6 +51,9 @@ export const useAvailableTimestamps = () => {
   
   const shouldFetch = isInitialized && instrument && expiry && (mode === 'live' || date);
   
+  // Only poll during market hours
+  const shouldPoll = isMarketOpen() && mode === 'live';
+  
   const { data, error, isLoading } = useSWR(
     shouldFetch ? ['available-timestamps', instrument, expiry, effectiveDate, mode] : null,
     () => fetchAvailableTimestamps({
@@ -60,8 +63,9 @@ export const useAvailableTimestamps = () => {
       live: mode === 'live'
     }),
     {
-      refreshInterval: mode === 'live' ? 60000 : 0,
+      refreshInterval: shouldPoll ? 60000 : 0,
       revalidateOnFocus: true,
+      refreshWhenHidden: false, // Stop polling when tab is hidden
     }
   );
 

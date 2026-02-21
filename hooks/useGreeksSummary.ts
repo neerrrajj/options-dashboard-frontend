@@ -3,15 +3,14 @@
 import useSWR from 'swr';
 
 import { fetchGreeksSummary } from '@/lib/api/greeks';
-import { getISTToday, isWithinISTHours } from '@/lib/utils';
+import { getISTToday, isMarketOpen } from '@/lib/utils';
 import { useGreeksFilterStore } from '@/store/greeksFilterStore';
 
 export const useGreeksSummary = () => {
   const { instrument, expiry, date, mode, isInitialized } = useGreeksFilterStore();
   
-  const istMarketHours = isWithinISTHours('09:15', '15:30');
-  const istLiveWindow = isWithinISTHours('09:15', '23:30');
-  const shouldPoll = istMarketHours && mode === 'live';
+  // Only poll during market hours AND when tab is visible
+  const shouldPoll = isMarketOpen() && mode === 'live';
   const pollingInterval = 60000; // 1 minute
   const effectiveDate = mode === 'live' ? getISTToday() : date;
   
@@ -20,18 +19,19 @@ export const useGreeksSummary = () => {
   
   const { data, error, isLoading, mutate } = useSWR(
     shouldFetch 
-      ? ['greeks-summary', instrument, expiry, effectiveDate, mode, istLiveWindow]
+      ? ['greeks-summary', instrument, expiry, effectiveDate, mode]
       : null,
     () => fetchGreeksSummary({
       instrument,
       expiry,
       date: effectiveDate,
-      live: mode === 'live' ? istLiveWindow : false
+      live: mode === 'live'
     }),
     {
       refreshInterval: shouldPoll ? pollingInterval : 0,
       revalidateOnFocus: true,
-      dedupingInterval: 0,
+      refreshWhenHidden: false, // Stop polling when tab is hidden
+      dedupingInterval: 5000,
       errorRetryCount: 3,
       errorRetryInterval: 5000,
     }
