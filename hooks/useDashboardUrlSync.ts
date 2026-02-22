@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 import { useDashboardFilterStore } from '@/store/dashboardFilterStore';
+import { isHistoricalOnlyHours } from '@/lib/utils';
 
 /**
  * Hook to sync dashboard filter state with URL query parameters.
@@ -35,8 +36,16 @@ export const useDashboardUrlSync = () => {
     const expiryParam = searchParams.get('expiry');
     const dateParam = searchParams.get('date');
 
-    // Only set mode from URL if explicitly provided
-    if (modeParam && ['live', 'historical'].includes(modeParam)) {
+    // On weekends/holidays/before 9 AM, force historical mode regardless of URL
+    const forceHistorical = isHistoricalOnlyHours();
+    
+    if (forceHistorical) {
+      // Always use historical mode during historical-only hours
+      setMode('historical');
+      // Clear date so auto-select picks latest available
+      setDate('');
+    } else if (modeParam && ['live', 'historical'].includes(modeParam)) {
+      // Only set mode from URL if NOT in historical-only hours
       setMode(modeParam);
       
       // Set date if in historical mode and date is provided
