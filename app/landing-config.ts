@@ -19,7 +19,7 @@ export const landingConfig = {
       { text: "FAQ", href: "#faq" }
     ],
     cta: {
-      text: "Get Access",
+      text: "Get Started",
       href: "#pricing"
     }
   },
@@ -117,7 +117,7 @@ export const landingConfig = {
     headline: "Trade With Precision",
     subheadline: "Join traders who understand market structure. ₹249/month.",
     button: {
-      text: "Get Access Now",
+      text: "Get Started Now",
       href: "#pricing"
     }
   },

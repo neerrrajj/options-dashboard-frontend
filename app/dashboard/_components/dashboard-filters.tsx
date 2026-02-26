@@ -92,7 +92,7 @@ export function DashboardFilters() {
   return (
     <div className="flex flex-wrap w-full gap-12 py-4">
       <Card className="w-full">
-        <div className="flex flex-row items-center gap-16 px-8">
+        <div className="flex flex-row items-start gap-16 px-8">
           {/* Instrument Selector */}
           <div className="space-y-2">
             <Label className="text-sm font-normal ml-1">Instrument</Label>
@@ -144,7 +144,7 @@ export function DashboardFilters() {
           </div>
     
           {/* Data Mode Toggle */}
-          <div className="space-y-2">
+          <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Label className="text-sm font-normal">Mode</Label>
               {isHistoricalOnlyHours() && (

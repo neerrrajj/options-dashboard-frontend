@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { landingConfig } from "./landing-config";
+import { GetStartedButton } from "@/components/get-started-button";
 
 const monoFont = { fontFamily: 'var(--font-mono), monospace' };
 const sansFont = { fontFamily: 'var(--font-sans), sans-serif' };
@@ -40,13 +41,9 @@ export default function LandingPage() {
               ))}
             </div>
 
-            <Link
-              href={nav.cta.href}
-              className="px-5 py-2 rounded-lg bg-landing-accent text-landing-bg text-sm font-semibold hover:bg-landing-accent/90 transition-colors"
-              style={monoFont}
-            >
+            <GetStartedButton className="px-6 py-2.5 rounded-lg bg-landing-accent text-landing-bg text-xs font-semibold hover:bg-landing-accent/90 transition-colors uppercase tracking-wide">
               {nav.cta.text}
-            </Link>
+            </GetStartedButton>
           </div>
         </div>
       </nav>
@@ -88,14 +85,10 @@ export default function LandingPage() {
                 {hero.subheadline}
               </p>
 
-              <Link
-                href={hero.cta.href}
-                className="inline-flex items-center rounded-lg gap-3 px-8 py-4 bg-landing-accent text-landing-bg font-bold text-sm tracking-wider uppercase hover:bg-landing-accent/90 transition-all duration-200"
-                style={monoFont}
-              >
+              <GetStartedButton className="inline-flex items-center rounded-lg gap-3 px-8 py-4 bg-landing-accent text-landing-bg font-bold text-sm tracking-wider uppercase hover:bg-landing-accent/90 transition-all duration-200">
                 {hero.cta.text}
                 <span>→</span>
-              </Link>
+              </GetStartedButton>
             </div>
 
             <div className="relative h-[500px] lg:h-[600px] w-full hidden lg:block">
@@ -218,13 +211,9 @@ export default function LandingPage() {
                   {pricing.description}
                 </p>
 
-                <Link
-                  href={pricing.cta.href}
-                  className="inline-flex items-center justify-center w-full rounded-lg px-8 py-4 bg-landing-accent text-landing-bg font-bold text-sm tracking-wider uppercase hover:bg-landing-accent/90 transition-all duration-200"
-                  style={monoFont}
-                >
+                <GetStartedButton className="inline-flex items-center justify-center w-full rounded-lg px-8 py-4 bg-landing-accent text-landing-bg font-bold text-sm tracking-wider uppercase hover:bg-landing-accent/90 transition-all duration-200">
                   {pricing.cta.text}
-                </Link>
+                </GetStartedButton>
 
                 <p 
                   className="mt-4 text-center text-xs text-landing-border-muted"
@@ -319,14 +308,10 @@ export default function LandingPage() {
           >
             {cta.subheadline}
           </p>
-          <Link
-            href={cta.button.href}
-            className="inline-flex items-center rounded-lg gap-3 px-10 py-5 bg-landing-accent text-landing-bg font-bold text-sm tracking-wider uppercase hover:bg-landing-accent/90 transition-all duration-200"
-            style={monoFont}
-          >
+          <GetStartedButton className="inline-flex items-center rounded-lg gap-3 px-10 py-4 bg-landing-accent text-landing-bg font-bold text-sm tracking-wider uppercase hover:bg-landing-accent/90 transition-all duration-200">
             {cta.button.text}
-            <span>→</span>
-          </Link>
+            <span className="text-lg ml-2">→</span>
+          </GetStartedButton>
         </div>
       </section>
 
