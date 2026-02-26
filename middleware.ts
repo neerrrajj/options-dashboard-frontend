@@ -31,10 +31,9 @@ export async function middleware(request: NextRequest) {
   )
 
   // Check session expiry by looking at the cookie
-  // We can't access localStorage in middleware, so we check a cookie
   const sessionDateCookie = request.cookies.get('auth-session-date')?.value
   const today = getISTDateString()
-  const isSessionExpired = sessionDateCookie && sessionDateCookie !== today
+  const isSessionExpired = !!sessionDateCookie && sessionDateCookie !== today
 
   // If session is expired, consider user not authenticated
   const isAuthenticated = !!user && !isSessionExpired
@@ -42,7 +41,12 @@ export async function middleware(request: NextRequest) {
   // If accessing protected route and not authenticated (or expired), redirect to auth
   if (isProtectedRoute && !isAuthenticated) {
     const authUrl = new URL('/auth', request.url)
-    return NextResponse.redirect(authUrl)
+    // Clear the expired cookie
+    const response = NextResponse.redirect(authUrl)
+    if (isSessionExpired) {
+      response.cookies.delete('auth-session-date')
+    }
+    return response
   }
 
   // If accessing auth route and already authenticated, redirect to dashboard
@@ -59,9 +63,6 @@ export async function middleware(request: NextRequest) {
       sameSite: 'lax',
       maxAge: 60 * 60 * 24, // 24 hours
     })
-  } else if (isSessionExpired) {
-    // Clear the cookie if session expired
-    supabaseResponse.cookies.delete('auth-session-date')
   }
 
   return supabaseResponse

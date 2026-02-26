@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
@@ -10,21 +11,45 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { User, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
+import { createClient } from '@/lib/supabase/client';
 
 const monoFont = { fontFamily: 'var(--font-mono), monospace' };
 
 export function UserMenu() {
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user: storeUser, logout, setUser, setSession } = useAuthStore();
+  const [localUser, setLocalUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Sync with Supabase session on mount
+  useEffect(() => {
+    const syncUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (user && session) {
+        setUser(user);
+        setSession(session);
+        setLocalUser(user);
+      }
+      setIsLoading(false);
+    };
+    
+    syncUser();
+  }, [setUser, setSession]);
 
   const handleLogout = async () => {
     await logout();
     router.push('/');
   };
 
-  if (!user) {
+  // Use store user or local user
+  const user = storeUser || localUser;
+
+  if (!user || isLoading) {
     return null;
   }
 

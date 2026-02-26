@@ -8,9 +8,27 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (!error && data.session) {
+      // Create response with redirect
+      const response = NextResponse.redirect(`${origin}${next}`)
+      
+      // Set session date cookie for middleware
+      const now = new Date()
+      const istOffset = 5.5 * 60 * 60 * 1000
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000)
+      const istTime = new Date(utc + istOffset)
+      const today = istTime.toISOString().split('T')[0]
+      
+      response.cookies.set('auth-session-date', today, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24, // 24 hours
+      })
+      
+      return response
     }
   }
 

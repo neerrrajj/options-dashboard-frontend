@@ -1,26 +1,31 @@
 'use client';
 
-import { Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AuthForm } from './_components/auth-form';
 import { useAuthStore } from '@/store/authStore';
 
 const monoFont = { fontFamily: 'var(--font-mono), monospace' };
 
 function AuthContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { isAuthenticated, isLoading, initializeAuth } = useAuthStore();
+  const { initializeAuth } = useAuthStore();
+  const [isInitializing, setIsInitializing] = useState(true);
 
   // Check for OAuth errors
   const error = searchParams.get('error');
 
   // Initialize auth on mount
-  // Note: We don't auto-redirect here since middleware handles it
-  // This is just for client-side state sync
+  useEffect(() => {
+    const init = async () => {
+      await initializeAuth();
+      setIsInitializing(false);
+    };
+    init();
+  }, [initializeAuth]);
 
   // Show loading state while checking auth
-  if (isLoading) {
+  if (isInitializing) {
     return (
       <main className="min-h-screen bg-landing-bg flex items-center justify-center">
         <div className="text-landing-muted" style={monoFont}>
@@ -45,7 +50,7 @@ function AuthContent() {
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           {/* Logo/Brand */}
-          <div className="text-center mb-8">
+          {/* <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-2">
               <span className="text-landing-accent text-2xl">◆</span>
               <span 
@@ -58,7 +63,7 @@ function AuthContent() {
             <p className="text-landing-muted text-sm" style={monoFont}>
               Sign in to access your dashboard
             </p>
-          </div>
+          </div> */}
 
           {/* OAuth Error Message */}
           {error === 'auth_callback_failed' && (

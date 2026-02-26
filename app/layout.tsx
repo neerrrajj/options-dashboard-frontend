@@ -3,6 +3,7 @@ import { JetBrains_Mono, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
 
 const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600", "700"],
@@ -42,6 +43,16 @@ export default function RootLayout({
           >
             <TooltipProvider>
               {children}
+              <Toaster 
+                position="bottom-right"
+                toastOptions={{
+                  style: {
+                    background: '#0d0d0d',
+                    border: '1px solid #222',
+                    color: '#e8e8e8',
+                  },
+                }}
+              />
             </TooltipProvider>
           </ThemeProvider>
       </body>

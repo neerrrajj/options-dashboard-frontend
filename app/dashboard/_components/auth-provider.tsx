@@ -1,29 +1,31 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const { isLoading, isAuthenticated, initializeAuth, checkAndHandleSessionExpiry } = useAuthStore();
+  const { isLoading, isAuthenticated, initializeAuth } = useAuthStore();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+    
     const init = async () => {
       await initializeAuth();
-      
-      // Check if session expired after initialization
-      const isExpired = checkAndHandleSessionExpiry();
-      if (isExpired) {
-        router.push('/auth');
+      if (mounted) {
+        setIsReady(true);
       }
     };
     
     init();
-  }, [initializeAuth, checkAndHandleSessionExpiry, router]);
+    
+    return () => {
+      mounted = false;
+    };
+  }, [initializeAuth]);
 
-  // Show loading state while checking auth
-  if (isLoading) {
+  // Show loading during initial auth check
+  if (!isReady || isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-muted-foreground">Loading...</div>
@@ -31,11 +33,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // If not authenticated and not loading, don't render children
-  // (middleware should handle redirect, but this is a fallback)
-  if (!isAuthenticated && !isLoading) {
-    return null;
-  }
-
+  // Render children - middleware handles auth redirects
   return <>{children}</>;
 }
