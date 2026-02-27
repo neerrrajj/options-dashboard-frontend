@@ -1,13 +1,13 @@
 export const landingConfig = {
   // Brand
   brand: {
-    name: "strikezone",
+    name: "optionstrike",
     logo: "◆"
   },
 
   // Meta
   meta: {
-    title: "strikezone | Gamma Analytics for Indian Options",
+    title: "optionstrike | Gamma Analytics for Indian Options",
     description: "Real-time GEX and OTM Greeks visualization for NIFTY & BANKNIFTY options trading."
   },
 
@@ -124,7 +124,7 @@ export const landingConfig = {
 
   // Footer
   footer: {
-    copyright: "© 2025 strikezone",
+    copyright: "© 2025 optionstrike",
     links: [
       { text: "Dashboard", href: "/dashboard" },
       { text: "Terms", href: "#" },

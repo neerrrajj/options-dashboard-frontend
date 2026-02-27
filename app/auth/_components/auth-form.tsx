@@ -335,7 +335,7 @@ export function AuthForm({ className }: AuthFormProps) {
             className="text-xl text-landing-fg text-center"
             style={monoFont}
           >
-            Welcome to strikezone
+            Welcome to optionstrike
           </CardTitle>
           <CardDescription 
             className="text-landing-muted text-center"

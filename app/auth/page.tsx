@@ -57,7 +57,7 @@ function AuthContent() {
                 className="text-2xl font-bold tracking-tight text-landing-fg"
                 style={monoFont}
               >
-                strikezone
+                optionstrike
               </span>
             </div>
             <p className="text-landing-muted text-sm" style={monoFont}>

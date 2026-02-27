@@ -1,6 +1,5 @@
 import Link from 'next/link'
 
-import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "@/components/user-menu";
 import { isHistoricalOnlyHours, isPreMarketHours, isMarketOpen } from "@/lib/utils";
 
@@ -13,7 +12,7 @@ export const Navbar = () => {
                 <div className="flex h-16 items-center justify-between">
                     <Link href="/dashboard" className="flex items-center gap-3 group">
                         <span className="text-landing-accent text-xl">◆</span>
-                        <span className="text-2xl font-bold">strikezone</span>
+                        <span className="text-2xl font-bold">optionstrike</span>
                     </Link>
                     <div className="flex items-center space-x-8">
                         {/* Market Status Badge */}
@@ -33,7 +32,6 @@ export const Navbar = () => {
                             <p>{isHistoricalOnlyHours() ? 'Market Closed' : isPreMarketHours() ? 'Pre-Market' : isMarketOpen() ? 'Market Open' : 'Market Closed'}</p>
                         </div>
                         <UserMenu />
-                        <ThemeToggle />
                     </div>
                 </div>
             </div>
