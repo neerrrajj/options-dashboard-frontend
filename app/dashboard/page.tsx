@@ -1,19 +1,37 @@
 'use client'
 
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { DashboardFilters } from "./_components/dashboard-filters";
 import { GexChart } from "./_components/gex-chart";
 import { OtmGreeksChart } from "./_components/otm-greeks-chart";
 import { useDashboardFilterStore } from "@/store/dashboardFilterStore";
 import { useDashboardMetadata } from "@/hooks/useDashboardMetadata";
 import { useDashboardAutoSwitch } from "@/hooks/useDashboardAutoSwitch";
-import { useDashboardUrlSync } from "@/hooks/useDashboardUrlSync";
+import { isHistoricalOnlyHours } from "@/lib/utils";
 
 const DashboardContent = () => {
-  // Sync store with URL params
-  useDashboardUrlSync();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   
-  const { mode, instrument, date } = useDashboardFilterStore();
+  const { mode, instrument, date, expiry, isInitialized, setMode, setDate, setInitialized } = useDashboardFilterStore();
+  
+  // Initial setup - check historical mode on mount
+  useEffect(() => {
+    if (isInitialized) return;
+    
+    // Check if we need to force historical mode
+    const forceHistorical = isHistoricalOnlyHours();
+    
+    if (forceHistorical) {
+      console.log('[Dashboard] Forcing historical mode - market closed');
+      setMode('historical');
+      setDate('');
+    }
+    
+    setInitialized(true);
+  }, [isInitialized, setMode, setDate, setInitialized]);
   
   // Fetch metadata to check if live data exists
   const { availableDates, isLoading } = useDashboardMetadata({
@@ -24,6 +42,21 @@ const DashboardContent = () => {
   
   // Auto-switch to historical if no live data
   useDashboardAutoSwitch(availableDates, isLoading);
+
+  // Sync URL with store state
+  useEffect(() => {
+    if (!isInitialized) return;
+    
+    const params = new URLSearchParams();
+    
+    if (mode) params.set('mode', mode);
+    if (instrument) params.set('instrument', instrument);
+    if (expiry) params.set('expiry', expiry);
+    if (mode === 'historical' && date) params.set('date', date);
+
+    const newUrl = `${pathname}?${params.toString()}`;
+    router.replace(newUrl, { scroll: false });
+  }, [mode, instrument, expiry, date, isInitialized, pathname, router]);
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">

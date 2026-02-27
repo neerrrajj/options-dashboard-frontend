@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 import { useDashboardFilterStore } from '@/store/dashboardFilterStore';
@@ -13,6 +13,7 @@ export const useDashboardUrlSync = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const initialSyncDone = useRef(false);
   
   const {
     instrument,
@@ -29,7 +30,8 @@ export const useDashboardUrlSync = () => {
 
   // Read URL params and update store on initial load (only once on mount)
   useEffect(() => {
-    if (isInitialized) return;
+    if (initialSyncDone.current) return;
+    initialSyncDone.current = true;
 
     const modeParam = searchParams.get('mode') as 'live' | 'historical' | null;
     const instrumentParam = searchParams.get('instrument');
@@ -67,7 +69,7 @@ export const useDashboardUrlSync = () => {
     setInitialized(true);
   }, []);
 
-  // Update URL when state changes
+  // Update URL when state changes (but not during initial load)
   useEffect(() => {
     if (!isInitialized) return;
 

@@ -51,8 +51,14 @@ export function DashboardFilters() {
   const isHistorical = mode === "historical";
   const selectedDate = useMemo(() => (date ? new Date(date) : undefined), [date]);
 
+  // Check if toggle should be disabled
+  const isToggleDisabled = !isInitialized || isHistoricalOnlyHours();
+
   // Handle mode switch
   const handleModeChange = (val: boolean) => {
+    // Don't allow changes if toggle is disabled
+    if (isToggleDisabled) return;
+    
     const newMode = val ? "historical" : "live";
     setMode(newMode);
     
@@ -174,8 +180,8 @@ export function DashboardFilters() {
                 id="historical"
                 checked={isHistorical}
                 onCheckedChange={handleModeChange}
-                disabled={!isInitialized || isHistoricalOnlyHours()}
-                className="cursor-pointer"
+                disabled={isToggleDisabled}
+                className={isToggleDisabled ? "" : "cursor-pointer"}
               />
               <Label htmlFor="historical" className="text-sm">Historical</Label>
             </div>

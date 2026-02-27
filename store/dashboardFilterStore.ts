@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { getISTToday, isBeforeMarketOpen } from '@/lib/utils';
+import { getISTToday, isHistoricalOnlyHours } from '@/lib/utils';
 
 type Mode = 'live' | 'historical';
 
@@ -22,7 +22,7 @@ interface DashboardFilterState {
   }) => void;
 }
 
-const defaultMode = isBeforeMarketOpen() ? 'historical' : 'live';
+const defaultMode = isHistoricalOnlyHours() ? 'historical' : 'live';
 
 export const useDashboardFilterStore = create<DashboardFilterState>((set, get) => ({
   instrument: 'NIFTY',

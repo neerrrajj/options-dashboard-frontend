@@ -96,13 +96,14 @@ export function isHistoricalOnlyHours(): boolean {
     return true;
   }
   
-  // Before 9:00 AM is historical only
+  // Before 9:00 AM and after 3:30 PM is historical only
   const hours = nowIST.getHours();
   const minutes = nowIST.getMinutes();
   const currentTime = hours * 60 + minutes;
   const preMarketStart = 9 * 60; // 9:00 AM
+  const marketClose = 15 * 60 + 30; // 3:30 PM
   
-  return currentTime < preMarketStart;
+  return currentTime < preMarketStart || currentTime > marketClose;
 }
 
 export const formatNumber = (value: number) => {
