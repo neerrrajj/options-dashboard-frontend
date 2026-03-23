@@ -97,20 +97,17 @@ export function OTPVerification({ email, onSuccess, onBack }: OTPVerificationPro
         <button
           onClick={onBack}
           className="flex items-center gap-1 text-landing-muted hover:text-landing-fg transition-colors mb-2 -ml-1"
-          style={monoFont}
         >
           <ArrowLeft size={14} />
           <span className="text-xs">Back</span>
         </button>
         <CardTitle 
           className="text-xl text-landing-fg"
-          style={monoFont}
         >
           Verify your email
         </CardTitle>
         <CardDescription 
           className="text-landing-muted"
-          style={monoFont}
         >
           Enter the 6-digit code sent to{' '}
           <span className="text-landing-accent">{email}</span>
@@ -121,7 +118,6 @@ export function OTPVerification({ email, onSuccess, onBack }: OTPVerificationPro
         {error && (
           <div 
             className="p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded"
-            style={monoFont}
           >
             {error}
           </div>
@@ -170,7 +166,6 @@ export function OTPVerification({ email, onSuccess, onBack }: OTPVerificationPro
           onClick={handleVerify}
           disabled={isLoading || otp.length !== 6}
           className="w-full bg-landing-accent text-landing-bg hover:bg-landing-accent/90 font-semibold tracking-wide uppercase text-xs disabled:opacity-50"
-          style={monoFont}
         >
           {isLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -185,7 +180,6 @@ export function OTPVerification({ email, onSuccess, onBack }: OTPVerificationPro
             onClick={handleResend}
             disabled={countdown > 0 || isResending}
             className="text-sm text-landing-muted hover:text-landing-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
-            style={monoFont}
           >
             {isResending ? (
               <>
@@ -201,7 +195,7 @@ export function OTPVerification({ email, onSuccess, onBack }: OTPVerificationPro
               </>
             )}
           </button>
-          <p className="text-xs text-landing-border-muted mt-2" style={monoFont}>
+          <p className="text-xs text-landing-border-muted mt-2">
             Code expires in 10 minutes
           </p>
         </div>

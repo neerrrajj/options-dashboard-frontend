@@ -6,7 +6,6 @@ import { landingConfig } from "./landing-config";
 import { GetStartedButton } from "@/components/get-started-button";
 
 const monoFont = { fontFamily: 'var(--font-mono), monospace' };
-const sansFont = { fontFamily: 'var(--font-sans), sans-serif' };
 
 export default function LandingPage() {
   const { brand, nav, hero, features, pricing, faq, cta, footer } = landingConfig;
@@ -22,7 +21,6 @@ export default function LandingPage() {
               <span className="text-landing-accent text-xl">{brand.logo}</span>
               <span 
                 className="text-xl font-bold tracking-tight text-landing-fg group-hover:text-landing-accent transition-colors"
-                style={monoFont}
               >
                 {brand.name}
               </span>
@@ -34,14 +32,13 @@ export default function LandingPage() {
                   key={index}
                   href={link.href}
                   className="text-base text-landing-muted hover:text-landing-fg transition-colors"
-                  style={sansFont}
                 >
                   {link.text}
                 </Link>
               ))}
             </div>
 
-            <GetStartedButton className="px-6 py-2.5 rounded-lg bg-landing-accent text-landing-bg text-xs font-semibold hover:bg-landing-accent/90 transition-colors uppercase tracking-wide">
+            <GetStartedButton className="px-6 py-2.5 rounded-lg bg-landing-accent text-landing-bg text-sm font-semibold hover:bg-landing-accent/90 transition-colors tracking-wide">
               {nav.cta.text}
             </GetStartedButton>
           </div>
@@ -60,12 +57,11 @@ export default function LandingPage() {
         
         <div className="container mx-auto px-6 lg:px-12 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            <div className="space-y-8 max-w-xl">
+            <div className="space-y-8 max-w-xl h-full">
               <div className="inline-flex items-center rounded-full gap-2 px-3 py-1.5 border border-landing-border-muted bg-landing-border-muted/50">
                 <div className="w-1.5 h-1.5 bg-landing-accent rounded-full animate-pulse" />
                 <div 
                   className="text-xs font-medium uppercase tracking-wider text-landing-muted"
-                  style={monoFont}
                 >
                   {hero.badge}
                 </div>
@@ -73,42 +69,41 @@ export default function LandingPage() {
 
               <h1 
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.1]"
-                style={monoFont}
               >
                 {hero.headline}
               </h1>
 
               <p 
                 className="text-lg leading-relaxed text-landing-muted"
-                style={sansFont}
               >
                 {hero.subheadline}
               </p>
 
-              <GetStartedButton className="inline-flex items-center rounded-lg gap-3 px-8 py-4 bg-landing-accent text-landing-bg font-bold text-sm tracking-wider uppercase hover:bg-landing-accent/90 transition-all duration-200">
+              <GetStartedButton className="inline-flex items-center rounded-lg gap-3 mt-12 px-8 py-4 bg-landing-accent text-landing-bg font-semibold text-base hover:bg-landing-accent/90 transition-all duration-200">
                 {hero.cta.text}
                 <span>→</span>
               </GetStartedButton>
             </div>
 
-            <div className="relative h-[500px] lg:h-[600px] w-full hidden lg:block">
-              <div className="absolute top-0 right-0 w-[520px] h-[220px] opacity-40 transition-opacity duration-500 hover:opacity-70">
-                <div className="absolute inset-0 border border-landing-border-light" />
+            <div className="relative h-[450px] lg:h-[500px] w-full hidden lg:block">
+              {/* Stacked Cards Layout */}
+              
+              {/* GEX Analysis Card - Top Right */}
+              <div className="absolute top-0 left-10 w-[420px] h-[200px] rounded-xl border-white/30 overflow-hidden shadow-lg opacity-90 hover:opacity-100 transition-opacity">
+                {/* <span className="relative top-12 left-12 text-white/90 text-xl font-medium z-10">GEX analysis</span> */}
                 <Image src={features.items[0].image} alt="GEX Chart" fill className="object-cover" />
               </div>
 
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[240px] opacity-50 transition-opacity duration-500 hover:opacity-80">
-                <div className="absolute inset-0 border border-landing-border-light" />
+              {/* Net GEX Card - Center Left */}
+              <div className="absolute top-[90px] bottom-0 right-[20px] w-[420px] h-[220px] object-contain rounded-xl border-white/30 overflow-hidden shadow-lg opacity-90 hover:opacity-100 transition-opacity">
                 <Image src={features.items[1].image} alt="Net GEX Chart" fill className="object-cover" />
               </div>
 
-              <div className="absolute bottom-8 left-0 w-[500px] h-[200px] opacity-60 transition-opacity duration-500 hover:opacity-90">
-                <div className="absolute inset-0 border border-landing-border-light" />
+              {/* Greeks Analysis Card - Bottom Right */}
+              <div className="absolute bottom-0 left-24 w-[420px] h-[200px] rounded-xl border-white/30 overflow-hidden shadow-lg opacity-90 hover:opacity-100 transition-opacity">
+                {/* <span className="absolute bottom-3 right-3 text-white/90 text-sm font-medium z-10">greeks analysis</span> */}
                 <Image src={features.items[2].image} alt="OTM Greeks Chart" fill className="object-cover" />
               </div>
-
-              {/* <div className="absolute top-20 left-20 w-20 h-px bg-landing-accent/20" />
-              <div className="absolute top-20 left-20 w-px h-20 bg-landing-accent/20" /> */}
             </div>
           </div>
         </div>
@@ -118,8 +113,7 @@ export default function LandingPage() {
       <section id="features" className="py-24 lg:py-32 border-b border-landing-border">
         <div className="container mx-auto px-6 lg:px-12">
           <h2 
-            className="text-3xl md:text-4xl font-bold mb-20 text-center"
-            style={monoFont}
+            className="text-3xl md:text-5xl font-bold mb-32 text-center underline underline-offset-8"
           >
             {features.sectionTitle}
           </h2>
@@ -140,14 +134,12 @@ export default function LandingPage() {
                   
                   <h3 
                     className="text-2xl md:text-3xl font-bold"
-                    style={monoFont}
                   >
                     {feature.title}
                   </h3>
                   
                   <p 
                     className="text-lg leading-relaxed text-landing-muted"
-                    style={sansFont}
                   >
                     {feature.description}
                   </p>
@@ -173,18 +165,16 @@ export default function LandingPage() {
       <section id="pricing" className="py-24 lg:py-32 border-b border-landing-border">
         <div className="container mx-auto px-6 lg:px-12">
           <h2 
-            className="text-3xl md:text-4xl font-bold mb-16 text-center"
-            style={monoFont}
+            className="text-3xl md:text-5xl font-bold mb-16 text-center underline underline-offset-8"
           >
             {pricing.sectionTitle}
           </h2>
 
           <div className="border border-landing-border-light bg-[#0d0d0d]">
-            <div className="grid lg:grid-cols-2">
-              <div className="p-10 lg:p-12 border-b lg:border-b-0 lg:border-r border-landing-border-light">
+            <div className="grid lg:grid-cols-12">
+              <div className="p-10 lg:p-12 col-span-5 border-b lg:border-b-0 lg:border-r border-landing-border-light">
                 <div 
                   className="inline-block px-3 py-1 mb-6 text-xs uppercase tracking-wider text-landing-muted border border-landing-border-muted"
-                  style={monoFont}
                 >
                   {pricing.badge}
                 </div>
@@ -198,7 +188,6 @@ export default function LandingPage() {
                   </span>
                   <span 
                     className="text-xl text-landing-muted"
-                    style={sansFont}
                   >
                     {pricing.period}
                   </span>
@@ -206,7 +195,6 @@ export default function LandingPage() {
 
                 <p 
                   className="mb-8 text-landing-muted"
-                  style={sansFont}
                 >
                   {pricing.description}
                 </p>
@@ -217,26 +205,18 @@ export default function LandingPage() {
 
                 <p 
                   className="mt-4 text-center text-xs text-landing-border-muted"
-                  style={sansFont}
                 >
                   {pricing.note}
                 </p>
               </div>
 
-              <div className="p-10 lg:p-12">
-                <h3 
-                  className="text-sm uppercase tracking-wider text-landing-muted mb-6"
-                  style={monoFont}
-                >
-                  What you get
-                </h3>
+              <div className="p-10 lg:p-12 col-span-7">
                 <ul className="grid sm:grid-cols-2 gap-4">
                   {pricing.features.map((feature, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <span className="text-landing-accent mt-0.5">*</span>
                       <span 
-                        className="text-sm text-landing-muted"
-                        style={sansFont}
+                        className=" text-landing-muted"
                       >
                         {feature}
                       </span>
@@ -253,8 +233,7 @@ export default function LandingPage() {
       <section id="faq" className="py-24 lg:py-32 border-b border-landing-border">
         <div className="container mx-auto px-6 lg:px-12 max-w-3xl">
           <h2 
-            className="text-3xl md:text-4xl font-bold mb-16"
-            style={monoFont}
+            className="text-3xl md:text-5xl font-bold mb-16 text-center underline underline-offset-8"
           >
             {faq.sectionTitle}
           </h2>
@@ -269,20 +248,17 @@ export default function LandingPage() {
                   <summary className="flex justify-between items-start cursor-pointer list-none">
                     <span 
                       className="text-lg font-medium pr-8 hover:text-landing-accent transition-colors"
-                      style={monoFont}
                     >
                       {item.question}
                     </span>
                     <span 
                       className="text-2xl text-landing-accent transition-transform group-open:rotate-45"
-                      style={monoFont}
                     >
                       +
                     </span>
                   </summary>
                   <p 
                     className="mt-4 leading-relaxed text-landing-muted"
-                    style={sansFont}
                   >
                     {item.answer}
                   </p>
@@ -294,23 +270,21 @@ export default function LandingPage() {
       </section>
 
       {/* FINAL CTA SECTION */}
-      <section className="py-24 lg:py-32">
+      <section className="py-16 lg:py-20">
         <div className="container mx-auto px-6 lg:px-12 text-center">
           <h2 
             className="text-4xl md:text-5xl font-bold mb-6"
-            style={monoFont}
           >
             {cta.headline}
           </h2>
           <p 
             className="mb-10 text-lg max-w-xl mx-auto text-landing-muted"
-            style={sansFont}
           >
             {cta.subheadline}
           </p>
-          <GetStartedButton className="inline-flex items-center rounded-lg gap-3 px-10 py-4 bg-landing-accent text-landing-bg font-bold text-sm tracking-wider uppercase hover:bg-landing-accent/90 transition-all duration-200">
+          <GetStartedButton className="inline-flex items-center rounded-lg gap-3 px-10 py-4 bg-landing-accent text-landing-bg font-semibold hover:bg-landing-accent/90 transition-all duration-200">
             {cta.button.text}
-            <span className="text-lg ml-2">→</span>
+            <span className="text-lg">→</span>
           </GetStartedButton>
         </div>
       </section>
@@ -333,20 +307,13 @@ export default function LandingPage() {
                 <Link
                   key={index}
                   href={link.href}
-                  className="text-xs text-landing-muted hover:text-landing-fg transition-colors"
-                  style={sansFont}
+                  className="text-sm text-landing-muted hover:text-landing-fg transition-colors"
                 >
                   {link.text}
                 </Link>
               ))}
             </div>
           </div>
-          <p 
-            className="mt-6 text-center text-xs text-landing-border-muted"
-            style={sansFont}
-          >
-            {footer.copyright}
-          </p>
         </div>
       </footer>
     </main>

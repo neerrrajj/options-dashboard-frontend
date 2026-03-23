@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/authStore';
 
-const monoFont = { fontFamily: 'var(--font-mono), monospace' };
-
 interface GetStartedButtonProps {
   className?: string;
   children: React.ReactNode;
@@ -47,7 +45,6 @@ export function GetStartedButton({ className, children }: GetStartedButtonProps)
       href={href}
       onClick={handleClick}
       className={className}
-      style={monoFont}
     >
       {children}
     </Link>

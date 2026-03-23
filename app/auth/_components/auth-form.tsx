@@ -14,8 +14,6 @@ import { useAuthStore } from '@/store/authStore';
 import { GoogleAuthButton } from './google-auth-button';
 import { toast } from 'sonner';
 
-const monoFont = { fontFamily: 'var(--font-mono), monospace' };
-
 // Password requirements
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -200,7 +198,7 @@ export function AuthForm({ className }: AuthFormProps) {
           className="ml-2 bg-muted border border-border text-muted-foreground"
         >
           <div className="space-y-1.5">
-            <p style={monoFont} className="text-sm font-medium">
+            <p className="text-sm font-medium">
               {isValid ? 'Password meets all requirements' : 'Password requirements:'}
             </p>
             {!isValid && (
@@ -267,7 +265,7 @@ export function AuthForm({ className }: AuthFormProps) {
           side="right"
           className="ml-2 bg-muted border border-border text-muted-foreground"
         >
-          <p style={monoFont} className="text-sm">
+          <p className="text-sm">
             {!isPasswordRequirementsMet 
               ? 'Password does not meet requirements' 
               : isMatch 
@@ -303,7 +301,6 @@ export function AuthForm({ className }: AuthFormProps) {
           <CheckCircle className="w-16 h-16 text-landing-accent mx-auto mb-4" />
           <h3 
             className="text-xl font-bold text-landing-fg mb-2"
-            style={monoFont}
           >
             Verification Email Sent
           </h3>
@@ -318,7 +315,6 @@ export function AuthForm({ className }: AuthFormProps) {
               setActiveTab('login');
             }}
             className="bg-landing-accent text-landing-bg hover:bg-landing-accent/90 font-semibold tracking-wide uppercase text-xs"
-            style={monoFont}
           >
             Go to Login
           </Button>
@@ -333,7 +329,7 @@ export function AuthForm({ className }: AuthFormProps) {
         <CardHeader className="space-y-1">
           <CardTitle 
             className="text-xl text-landing-fg text-center"
-            style={monoFont}
+            
           >
             Welcome to optionstrike
           </CardTitle>
@@ -349,14 +345,12 @@ export function AuthForm({ className }: AuthFormProps) {
               <TabsTrigger 
                 value="login"
                 className="data-[state=active]:bg-landing-accent data-[state=active]:text-landing-bg"
-                style={monoFont}
               >
                 Login
               </TabsTrigger>
               <TabsTrigger 
                 value="signup"
                 className="data-[state=active]:bg-landing-accent data-[state=active]:text-landing-bg"
-                style={monoFont}
               >
                 Sign Up
               </TabsTrigger>
@@ -379,7 +373,6 @@ export function AuthForm({ className }: AuthFormProps) {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="bg-landing-bg border-landing-border-light text-landing-fg placeholder:text-landing-border-muted focus:border-landing-accent tracking-wide"
-                    style={monoFont}
                   />
                 </div>
                 <div className="space-y-2">
@@ -398,7 +391,6 @@ export function AuthForm({ className }: AuthFormProps) {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       className="bg-landing-bg border-landing-border-light text-landing-fg placeholder:text-landing-border-muted focus:border-landing-accent pr-10 tracking-wide"
-                    style={monoFont}
                     />
                     <button
                       type="button"
@@ -412,8 +404,7 @@ export function AuthForm({ className }: AuthFormProps) {
                 <Button
                   type="submit"
                   disabled={isLoading || !isLoginValid()}
-                  className="w-full bg-landing-accent text-landing-bg hover:bg-landing-accent/90 font-semibold tracking-wider uppercase text-sm disabled:opacity-50"
-                  style={monoFont}
+                  className="w-full bg-landing-accent text-landing-bg hover:bg-landing-accent/90 font-semibold tracking-wide text-sm disabled:opacity-50"
                 >
                   {isLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -441,7 +432,6 @@ export function AuthForm({ className }: AuthFormProps) {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="bg-landing-bg border-landing-border-light text-landing-fg placeholder:text-landing-border-muted focus:border-landing-accent tracking-wide"
-                    style={monoFont}
                   />
                 </div>
                 <div className="space-y-2">
@@ -460,7 +450,6 @@ export function AuthForm({ className }: AuthFormProps) {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       className="bg-landing-bg border-landing-border-light text-landing-fg placeholder:text-landing-border-muted focus:border-landing-accent pr-16 tracking-wide"
-                      style={monoFont}
                     />
                     <PasswordValidationIcon />
                     <button
@@ -488,7 +477,6 @@ export function AuthForm({ className }: AuthFormProps) {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                       className="bg-landing-bg border-landing-border-light text-landing-fg placeholder:text-landing-border-muted focus:border-landing-accent pr-16 tracking-wide"
-                      style={monoFont}
                     />
                     <ConfirmPasswordIcon />
                     <button
@@ -503,8 +491,7 @@ export function AuthForm({ className }: AuthFormProps) {
                 <Button
                   type="submit"
                   disabled={isLoading || !isSignupValid()}
-                  className="w-full bg-landing-accent text-landing-bg hover:bg-landing-accent/90 font-semibold tracking-wider uppercase text-sm disabled:opacity-50 cursor-pointer"
-                  style={monoFont}
+                  className="w-full bg-landing-accent text-landing-bg hover:bg-landing-accent/90 font-semibold tracking-wide text-sm disabled:opacity-50 cursor-pointer"
                 >
                   {isLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

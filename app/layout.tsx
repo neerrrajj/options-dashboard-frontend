@@ -1,21 +1,19 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, DM_Sans } from "next/font/google";
+import { Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 
+const geistSans = Geist({
+  variable: "--font-sans",
+  subsets: ["latin"],
+});
+
 const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-mono",
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-sans",
   display: "swap",
 });
 
@@ -32,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${jetbrainsMono.variable} ${dmSans.variable} antialiased`}
+        className={`${geistSans.variable} ${jetbrainsMono.variable} antialiased`}
         style={{ fontFamily: 'var(--font-sans), sans-serif' }}
       >
         <ThemeProvider

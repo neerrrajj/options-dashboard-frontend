@@ -17,8 +17,6 @@ import { Switch } from '@/components/ui/switch';
 import { useAuthStore } from '@/store/authStore';
 import { createClient } from '@/lib/supabase/client';
 
-const monoFont = { fontFamily: 'var(--font-mono), monospace' };
-
 export function UserMenu() {
   const router = useRouter();
   const { user: storeUser, logout, setUser, setSession } = useAuthStore();
@@ -89,7 +87,7 @@ export function UserMenu() {
         {/* Email Section */}
         <DropdownMenuLabel className="font-normal px-3 py-3 bg-landing-accent/10 rounded-t-md">
           <div className="flex flex-col space-y-1 ">
-            <p className="text-sm font-medium text-landing-accent tracking-wide text-center" style={monoFont}>
+            <p className="text-sm font-medium text-landing-accent tracking-wide text-center">
               {displayEmail}
             </p>
           </div>
@@ -123,7 +121,6 @@ export function UserMenu() {
           <Button
             variant="outline" 
             className='flex w-full cursor-pointer border border-red-500/50 text-red-500/80 hover:text-red-500/90'
-            style={monoFont}
             onClick={handleLogout}
           >
             <LogOut className="mr-2 h-4 w-4" />

@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
-const monoFont = { fontFamily: 'var(--font-mono), monospace' };
-
 // Google "G" logo SVG
 function GoogleIcon({ className }: { className?: string }) {
   return (
@@ -65,7 +63,6 @@ export function GoogleAuthButton() {
       onClick={handleGoogleSignIn}
       disabled={isLoading}
       className="w-full bg-transparent border-landing-border-light text-landing-fg hover:bg-landing-border-muted/30 hover:text-landing-fg font-medium"
-      style={monoFont}
     >
       {isLoading ? (
         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

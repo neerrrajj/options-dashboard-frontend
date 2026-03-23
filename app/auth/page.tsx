@@ -5,8 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import { AuthForm } from './_components/auth-form';
 import { useAuthStore } from '@/store/authStore';
 
-const monoFont = { fontFamily: 'var(--font-mono), monospace' };
-
 function AuthContent() {
   const searchParams = useSearchParams();
   const { initializeAuth } = useAuthStore();
@@ -28,7 +26,7 @@ function AuthContent() {
   if (isInitializing) {
     return (
       <main className="min-h-screen bg-landing-bg flex items-center justify-center">
-        <div className="text-landing-muted" style={monoFont}>
+        <div className="text-landing-muted">
           Loading...
         </div>
       </main>
@@ -55,12 +53,11 @@ function AuthContent() {
               <span className="text-landing-accent text-2xl">◆</span>
               <span 
                 className="text-2xl font-bold tracking-tight text-landing-fg"
-                style={monoFont}
               >
                 optionstrike
               </span>
             </div>
-            <p className="text-landing-muted text-sm" style={monoFont}>
+            <p className="text-landing-muted text-sm">
               Sign in to access your dashboard
             </p>
           </div> */}
@@ -69,7 +66,6 @@ function AuthContent() {
           {error === 'auth_callback_failed' && (
             <div 
               className="mb-4 p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded text-center"
-              style={monoFont}
             >
               Authentication failed. Please try again.
             </div>
@@ -87,7 +83,9 @@ export default function AuthPage() {
   return (
     <Suspense fallback={
       <main className="min-h-screen bg-landing-bg flex items-center justify-center">
-        <div className="text-landing-muted" style={monoFont}>
+        <div 
+          className="text-landing-muted"
+        >
           Loading...
         </div>
       </main>
