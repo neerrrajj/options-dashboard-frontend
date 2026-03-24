@@ -21,9 +21,9 @@ import { Slider } from '@/components/ui/slider';
 import { ChartTooltip, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { useDashboardTimestamps } from '@/hooks/useDashboardTimestamps';
-import { useDashboardDayData } from '@/hooks/useDashboardDayData';
-import { useDashboardSummary } from '@/hooks/useDashboardSummary';
+import { useIntradayTimestamps } from '@/hooks/useIntradayTimestamps';
+import { useIntradayDayData } from '@/hooks/useIntradayDayData';
+import { useIntradaySummary } from '@/hooks/useIntradaySummary';
 import { formatNumber, formatTime } from '@/lib/utils';
 
 export const GexChart = () => {
@@ -40,11 +40,11 @@ export const GexChart = () => {
   const [spotPrice, setSpotPrice] = useState<number | null>(null);
   const [isSliderActive, setIsSliderActive] = useState(false);
 
-  const { timestamps, latestTimestamp, isLoading: timestampsLoading } = useDashboardTimestamps();
+  const { timestamps, latestTimestamp, isLoading: timestampsLoading } = useIntradayTimestamps();
   // Fetch full day data once - no API calls on slider movement
-  const { data: dayData, isLoading, error } = useDashboardDayData();
+  const { data: dayData, isLoading, error } = useIntradayDayData();
   // Use dashboard summary
-  const { data: summaryData, isLoading: isSummaryLoading } = useDashboardSummary();
+  const { data: summaryData, isLoading: isSummaryLoading } = useIntradaySummary();
   const [totalNetGex, setTotalNetGex] = useState<number | null>(null);
 
   const [initialStrikeRange, setInitialStrikeRange] = useState<{ min: number, max: number } | null>(null);

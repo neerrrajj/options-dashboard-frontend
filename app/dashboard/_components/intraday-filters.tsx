@@ -22,12 +22,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { useDashboardMetadata } from "@/hooks/useDashboardMetadata";
-import { useDashboardFilterStore } from "@/store/dashboardFilterStore";
+import { useIntradayMetadata } from "@/hooks/useIntradayMetadata";
+import { useIntradayFilterStore } from "@/store/intradayFilterStore";
 import { cn, isPreMarketHours, isHistoricalOnlyHours, isMarketOpen } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 
-export function DashboardFilters() {
+export function IntradayFilters() {
   const {
     instrument,
     expiry,
@@ -38,9 +38,9 @@ export function DashboardFilters() {
     setMode,
     setDate,
     isInitialized
-  } = useDashboardFilterStore();
+  } = useIntradayFilterStore();
 
-  const { instruments, expiries, availableDates, isLoading } = useDashboardMetadata({
+  const { instruments, expiries, availableDates, isLoading } = useIntradayMetadata({
     instrument,
     live: mode === "live",
     date: mode === "historical" ? date : undefined 
@@ -98,7 +98,7 @@ export function DashboardFilters() {
   return (
     <div className="flex flex-wrap w-full gap-12 py-4">
       <Card className="w-full">
-        <div className="flex flex-row items-start gap-16 px-8">
+        <div className="flex flex-row items-start gap-16 px-8 flex-wrap">
           {/* Instrument Selector */}
           <div className="space-y-2">
             <Label className="text-sm font-normal ml-1">Instrument</Label>

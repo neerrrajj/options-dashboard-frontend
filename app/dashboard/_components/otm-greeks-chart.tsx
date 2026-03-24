@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
-import { useDashboardSummary } from "@/hooks/useDashboardSummary";
+import { useIntradaySummary } from "@/hooks/useIntradaySummary";
 
 type GreeksSnapshot = {
   ist_minute: string;
@@ -20,7 +20,7 @@ type GreeksSnapshot = {
 };
 
 export const OtmGreeksChart = () => {
-  const { data = [], isLoading } = useDashboardSummary() as {
+  const { data = [], isLoading } = useIntradaySummary() as {
     data: GreeksSnapshot[];
     isLoading: boolean;
   };

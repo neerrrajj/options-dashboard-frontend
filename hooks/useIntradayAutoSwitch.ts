@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react';
-import { useDashboardFilterStore } from '@/store/dashboardFilterStore';
+import { useIntradayFilterStore } from '@/store/intradayFilterStore';
 import { isHistoricalOnlyHours, isWithinISTHours } from '@/lib/utils';
 
 /**
@@ -12,8 +12,8 @@ import { isHistoricalOnlyHours, isWithinISTHours } from '@/lib/utils';
  * Note: During market hours (9:15 AM - 3:30 PM), always stay in live mode by default
  * even if no data exists yet (user can manually switch to historical if needed).
  */
-export const useDashboardAutoSwitch = (availableDates: string[], isLoading: boolean) => {
-  const { mode, setMode, setDate, isInitialized } = useDashboardFilterStore();
+export const useIntradayAutoSwitch = (availableDates: string[], isLoading: boolean) => {
+  const { mode, setMode, setDate, isInitialized } = useIntradayFilterStore();
 
   useEffect(() => {
     if (!isInitialized || isLoading) return;

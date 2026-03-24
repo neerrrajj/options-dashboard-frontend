@@ -2,15 +2,15 @@
 
 import useSWR from 'swr';
 
-import { useDashboardFilterStore } from '@/store/dashboardFilterStore';
+import { useIntradayFilterStore } from '@/store/intradayFilterStore';
 import { getISTToday, isMarketOpen } from '@/lib/utils';
 import { fetchAvailableTimestamps } from '@/lib/api/gex';
 
 /**
  * Hook to fetch available timestamps for the dashboard.
  */
-export const useDashboardTimestamps = () => {
-  const { instrument, expiry, date, mode, isInitialized } = useDashboardFilterStore();
+export const useIntradayTimestamps = () => {
+  const { instrument, expiry, date, mode, isInitialized } = useIntradayFilterStore();
   const effectiveDate = mode === 'live' ? getISTToday() : date;
   
   const shouldFetch = isInitialized && instrument && expiry && (mode === 'live' || date);

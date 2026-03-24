@@ -2,7 +2,7 @@
 
 import useSWR from 'swr';
 
-import { useDashboardFilterStore } from '@/store/dashboardFilterStore';
+import { useIntradayFilterStore } from '@/store/intradayFilterStore';
 import { getISTToday, isMarketOpen } from '@/lib/utils';
 import { fetchGexData } from '@/lib/api/gex';
 
@@ -10,8 +10,8 @@ import { fetchGexData } from '@/lib/api/gex';
  * Hook to fetch ALL data for a full day.
  * Used by the slider - fetches once, then client filters by timestamp.
  */
-export const useDashboardDayData = () => {
-  const { instrument, expiry, date, mode, isInitialized } = useDashboardFilterStore();
+export const useIntradayDayData = () => {
+  const { instrument, expiry, date, mode, isInitialized } = useIntradayFilterStore();
   const shouldPoll = isMarketOpen() && mode === 'live';
   const pollingInterval = 60000;
   const effectiveDate = mode === 'live' ? getISTToday() : date;

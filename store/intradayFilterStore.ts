@@ -4,7 +4,7 @@ import { getISTToday, isHistoricalOnlyHours } from '@/lib/utils';
 
 type Mode = 'live' | 'historical';
 
-interface DashboardFilterState {
+interface IntradayFilterState {
   instrument: string;
   expiry: string;
   mode: Mode;
@@ -24,7 +24,7 @@ interface DashboardFilterState {
 
 const defaultMode = isHistoricalOnlyHours() ? 'historical' : 'live';
 
-export const useDashboardFilterStore = create<DashboardFilterState>((set, get) => ({
+export const useIntradayFilterStore = create<IntradayFilterState>((set, get) => ({
   instrument: 'NIFTY',
   expiry: '',
   mode: defaultMode,

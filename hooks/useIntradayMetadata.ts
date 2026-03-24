@@ -3,7 +3,7 @@
 import useSWR from 'swr';
 import { fetchGexMetadata } from '@/lib/api/gex';
 
-export const useDashboardMetadata = ({
+export const useIntradayMetadata = ({
   instrument,
   live,
   date

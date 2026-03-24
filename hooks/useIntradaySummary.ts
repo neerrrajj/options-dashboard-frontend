@@ -2,15 +2,15 @@
 
 import useSWR from 'swr';
 
-import { useDashboardFilterStore } from '@/store/dashboardFilterStore';
+import { useIntradayFilterStore } from '@/store/intradayFilterStore';
 import { getISTToday, isMarketOpen } from '@/lib/utils';
 import { fetchGreeksSummary } from '@/lib/api/greeks';
 
 /**
  * Hook to fetch summary data for the dashboard.
  */
-export const useDashboardSummary = () => {
-  const { instrument, expiry, date, mode, isInitialized } = useDashboardFilterStore();
+export const useIntradaySummary = () => {
+  const { instrument, expiry, date, mode, isInitialized } = useIntradayFilterStore();
   const effectiveDate = mode === 'live' ? getISTToday() : date;
   const shouldPoll = mode === 'live' && isMarketOpen();
   

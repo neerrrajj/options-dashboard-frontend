@@ -3,13 +3,13 @@
 import { useEffect, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
-import { useDashboardFilterStore } from '@/store/dashboardFilterStore';
+import { useIntradayFilterStore } from '@/store/intradayFilterStore';
 import { isHistoricalOnlyHours } from '@/lib/utils';
 
 /**
  * Hook to sync dashboard filter state with URL query parameters.
  */
-export const useDashboardUrlSync = () => {
+export const useIntradayUrlSync = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -26,7 +26,7 @@ export const useDashboardUrlSync = () => {
     setMode,
     setDate,
     setInitialized,
-  } = useDashboardFilterStore();
+  } = useIntradayFilterStore();
 
   // Read URL params and update store on initial load (only once on mount)
   useEffect(() => {
