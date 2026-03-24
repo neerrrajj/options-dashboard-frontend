@@ -134,10 +134,10 @@ export function PositionalFilters() {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="w-full py-4 space-y-8">
       {/* Filters Card */}
       <Card className="w-full">
-        <div className="flex flex-row items-start gap-16 px-8 py-4 flex-wrap">
+        <div className="flex flex-row items-start gap-16 px-8 flex-wrap">
           {/* Instrument Combobox */}
           <div className="space-y-2">
             <Label className="text-sm font-normal ml-1">Instrument</Label>
@@ -393,8 +393,8 @@ export function PositionalFilters() {
           onValueChange={(val) => setValueMode(val as "points" | "percentage")}
         >
           <TabsList>
-            <TabsTrigger value="points" className="text-sm">Points</TabsTrigger>
-            <TabsTrigger value="percentage" className="text-sm">Percentage</TabsTrigger>
+            <TabsTrigger value="points" className="text-sm tracking-wide">Points</TabsTrigger>
+            <TabsTrigger value="percentage" className="text-sm tracking-wide">Percentage</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
