@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
-import { ChevronDownIcon, Info } from "lucide-react";
+import { ChevronDownIcon, Info, AlertCircle } from "lucide-react";
 
 import {
   Select,
@@ -26,6 +26,8 @@ import { useIntradayMetadata } from "@/hooks/useIntradayMetadata";
 import { useIntradayFilterStore } from "@/store/intradayFilterStore";
 import { cn, isPreMarketHours, isHistoricalOnlyHours, isMarketOpen } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
+
+const IS_OPERATIONAL = process.env.NEXT_PUBLIC_OPERATIONAL === 'true';
 
 export function IntradayFilters() {
   const {
@@ -52,7 +54,7 @@ export function IntradayFilters() {
   const selectedDate = useMemo(() => (date ? new Date(date) : undefined), [date]);
 
   // Check if toggle should be disabled
-  const isToggleDisabled = !isInitialized || isHistoricalOnlyHours();
+  const isToggleDisabled = !isInitialized || isHistoricalOnlyHours() || !IS_OPERATIONAL;
 
   // Handle mode switch
   const handleModeChange = (val: boolean) => {
@@ -153,7 +155,7 @@ export function IntradayFilters() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Label className="text-sm font-normal">Mode</Label>
-              {isHistoricalOnlyHours() && (
+              {(isHistoricalOnlyHours() || !IS_OPERATIONAL) && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info className="w-3 h-3 text-muted-foreground cursor-default" />
@@ -161,7 +163,9 @@ export function IntradayFilters() {
                   <TooltipContent>
                     {/* <p>Live mode available at 9:00 AM</p> */}
                     <p>
-                      {isHistoricalOnlyHours() ? (
+                      {!IS_OPERATIONAL ? (
+                        "System not operational • Historical only"
+                      ) : isHistoricalOnlyHours() ? (
                         "Historical only • Live at 9:00 AM"
                       ) : mode === 'live' ? (
                         isPreMarketHours() ? (
@@ -241,6 +245,14 @@ export function IntradayFilters() {
                   />
                 </PopoverContent>
               </Popover>
+            </div>
+          )}
+
+          {/* Operational Status Warning */}
+          {!IS_OPERATIONAL && (
+            <div className="ml-auto h-full w-64 flex items-center gap-4 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-500 text-sm">
+              <AlertCircle className="w-6 h-6 flex-shrink-0" />
+              <span>System isn&apos;t operational, showing historical data</span>
             </div>
           )}
         </div>

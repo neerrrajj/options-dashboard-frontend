@@ -4,12 +4,15 @@ import { getISTToday, isHistoricalOnlyHours } from '@/lib/utils';
 
 type Mode = 'live' | 'historical';
 
+const IS_OPERATIONAL = process.env.NEXT_PUBLIC_OPERATIONAL === 'true';
+
 interface IntradayFilterState {
   instrument: string;
   expiry: string;
   mode: Mode;
   date: string;
   isInitialized: boolean;
+  isOperational: boolean;
   setInstrument: (i: string) => void;
   setExpiry: (e: string) => void;
   setMode: (m: Mode) => void;
@@ -22,7 +25,7 @@ interface IntradayFilterState {
   }) => void;
 }
 
-const defaultMode = isHistoricalOnlyHours() ? 'historical' : 'live';
+const defaultMode = isHistoricalOnlyHours() || !IS_OPERATIONAL ? 'historical' : 'live';
 
 export const useIntradayFilterStore = create<IntradayFilterState>((set, get) => ({
   instrument: 'NIFTY',
@@ -30,6 +33,7 @@ export const useIntradayFilterStore = create<IntradayFilterState>((set, get) => 
   mode: defaultMode,
   date: defaultMode === 'historical' ? '' : getISTToday(),
   isInitialized: false,
+  isOperational: IS_OPERATIONAL,
   
   setInstrument: (instrument) => {
     set({ instrument });
