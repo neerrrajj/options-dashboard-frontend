@@ -60,7 +60,7 @@ function PositionalDashboardContent() {
           />
           <StatRangeCard
             title="Body Range"
-            subtitle="|Close - Open|"
+            subtitle="| Close - Open |"
             description="The distance between open and close prices. Shows how much the price moved directionally, ignoring intraday swings."
             stats={data?.range?.body_range?.[unit]}
             unit={unit}

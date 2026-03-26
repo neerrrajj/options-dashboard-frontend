@@ -404,7 +404,7 @@ export function AuthForm({ className }: AuthFormProps) {
                 <Button
                   type="submit"
                   disabled={isLoading || !isLoginValid()}
-                  className="w-full bg-landing-accent text-landing-bg hover:bg-landing-accent/90 font-semibold tracking-wide text-sm disabled:opacity-50"
+                  className="w-full bg-landing-accent text-landing-bg hover:bg-landing-accent/90 font-semibold tracking-wide text-sm disabled:opacity-50 cursor-pointer "
                 >
                   {isLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -431,7 +431,7 @@ export function AuthForm({ className }: AuthFormProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="bg-landing-bg border-landing-border-light text-landing-fg placeholder:text-landing-border-muted focus:border-landing-accent tracking-wide"
+                    className="bg-landing-bg border-landing-border-light text-landing-fg placeholder:text-landing-border-muted focus:border-landing-accent tracking-wide cursor-pointer"
                   />
                 </div>
                 <div className="space-y-2">

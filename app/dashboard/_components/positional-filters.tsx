@@ -21,7 +21,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { usePositionalFilterStore, type WeekDay, type MetricType } from "@/store/positionalFilterStore";
 import { useSymbols } from "@/hooks/useSymbols";
 import { cn } from "@/lib/utils";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 
 const weekDays: WeekDay[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -30,6 +30,18 @@ const metricOptions: { value: MetricType; label: string }[] = [
   { value: "net_change", label: "Net Change" },
   { value: "gaps", label: "Gaps" },
 ];
+
+// Helper to clean symbol (remove .NS suffix, ^ prefix, and map NSEI to NIFTY)
+const cleanSymbol = (symbol: string): string => {
+  let cleaned = symbol.replace(/\.NS$/i, '').replace(/^\^/, '');
+  // Map Yahoo Finance index symbols to common names
+  const indexMap: Record<string, string> = {
+    'NSEI': 'NIFTY',
+    'NSEBANK': 'BANKNIFTY',
+    'BSESN': 'SENSEX',
+  };
+  return indexMap[cleaned] || cleaned;
+};
 
 export function PositionalFilters() {
   const {
@@ -55,8 +67,10 @@ export function PositionalFilters() {
   const [isEndDateOpen, setIsEndDateOpen] = useState(false);
   const [isInstrumentOpen, setIsInstrumentOpen] = useState(false);
   const [instrumentSearch, setInstrumentSearch] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
 
   const { symbols, metadata, isLoading } = useSymbols();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const selectedStartDate = startDate ? new Date(startDate) : undefined;
   const selectedEndDate = endDate ? new Date(endDate) : undefined;
@@ -118,12 +132,45 @@ export function PositionalFilters() {
       .map(item => item.symbol);
   }, [symbols, instrumentSearch]);
 
+  // Reset highlighted index when filtered symbols change
+  useEffect(() => {
+    setHighlightedIndex(0);
+  }, [filteredSymbols.length, instrumentSearch]);
+
   // Handle instrument selection
-  const handleSelectInstrument = (symbol: string) => {
+  const handleSelectInstrument = useCallback((symbol: string) => {
     setInstrument(symbol);
     setIsInstrumentOpen(false);
     setInstrumentSearch("");
-  };
+    setHighlightedIndex(0);
+  }, [setInstrument]);
+
+  // Keyboard navigation handler
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (filteredSymbols.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex(prev => 
+          prev < filteredSymbols.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex(prev => prev > 0 ? prev - 1 : 0);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (filteredSymbols[highlightedIndex]) {
+          handleSelectInstrument(filteredSymbols[highlightedIndex].symbol);
+        }
+        break;
+      case 'Escape':
+        setIsInstrumentOpen(false);
+        break;
+    }
+  }, [filteredSymbols, highlightedIndex, handleSelectInstrument]);
 
   // Check if data is stale (from previous day)
   const isStale = metadata && metadata.last_fetch_date !== new Date().toLocaleDateString("en-CA", { 
@@ -157,7 +204,7 @@ export function PositionalFilters() {
                       Loading...
                     </span>
                   ) : selectedSymbolInfo ? (
-                    <span className="truncate">{selectedSymbolInfo.name}</span>
+                    <span className="truncate">{cleanSymbol(selectedSymbolInfo.symbol)}</span>
                   ) : (
                     <span className="text-muted-foreground">Search symbol...</span>
                   )}
@@ -167,9 +214,11 @@ export function PositionalFilters() {
               <PopoverContent className="w-[320px] p-0" align="start">
                 <div className="p-2 border-b">
                   <Input
+                    ref={inputRef}
                     placeholder="Search by name or ticker (e.g., RELIANCE)"
                     value={instrumentSearch}
                     onChange={(e) => setInstrumentSearch(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className="h-9 text-sm"
                     autoFocus
                   />
@@ -189,18 +238,19 @@ export function PositionalFilters() {
                     </div>
                   ) : (
                     <div className="py-1">
-                      {filteredSymbols.map((item) => (
+                      {filteredSymbols.map((item, index) => (
                         <button
                           key={item.symbol}
                           onClick={() => handleSelectInstrument(item.symbol)}
                           className={cn(
                             "w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center justify-between gap-2",
-                            instrument === item.symbol && "bg-muted"
+                            instrument === item.symbol && "bg-muted",
+                            index === highlightedIndex && "bg-accent"
                           )}
                         >
                           <div className="flex flex-col min-w-0">
                             <span className="font-medium truncate">{item.name}</span>
-                            <span className="text-xs text-muted-foreground">{item.symbol}</span>
+                            <span className="text-xs text-muted-foreground">{cleanSymbol(item.symbol)}</span>
                           </div>
                           {instrument === item.symbol && (
                             <Check className="h-4 w-4 text-primary shrink-0" />
@@ -233,7 +283,7 @@ export function PositionalFilters() {
                     !selectedStartDate && "text-muted-foreground"
                   )}
                 >
-                  {selectedStartDate ? format(selectedStartDate, "yyyy-MM-dd") : "Pick date"}
+                  {selectedStartDate ? format(selectedStartDate, "dd-MM-yyyy") : "Pick date"}
                   <ChevronDownIcon className="h-4 w-4 text-neutral-500"/>
                 </Button>
               </PopoverTrigger>
@@ -273,7 +323,7 @@ export function PositionalFilters() {
                     !selectedEndDate && "text-muted-foreground"
                   )}
                 >
-                  {selectedEndDate ? format(selectedEndDate, "yyyy-MM-dd") : "Pick date"}
+                  {selectedEndDate ? format(selectedEndDate, "dd-MM-yyyy") : "Pick date"}
                   <ChevronDownIcon className="h-4 w-4 text-neutral-500"/>
                 </Button>
               </PopoverTrigger>

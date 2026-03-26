@@ -177,17 +177,27 @@ export function StatRangeCard({
       <CardContent className="space-y-6">
         {/* Range Bar with nested levels */}
         <div className="space-y-1">
-          {/* Min & Max values */}
-          <div className="flex justify-between text-xs text-muted-foreground font-sans tabular-nums">
-            <span>{formatNum(stats.min)}</span>
-            <span>{formatNum(stats.max)}</span>
+          {/* Min, Avg, Max values above bar */}
+          <div className="relative h-4">
+            <span className="absolute left-0 text-xs text-muted-foreground font-sans tabular-nums">
+              {formatNum(stats.min)}
+            </span>
+            <span 
+              className="absolute text-xs font-semibold text-muted-foreground font-sans tabular-nums"
+              style={{ left: `${positions.avg}%`, transform: 'translateX(-50%)' }}
+            >
+              {formatNum(stats.avg)}
+            </span>
+            <span className="absolute right-0 text-xs text-muted-foreground font-sans tabular-nums">
+              {formatNum(stats.max)}
+            </span>
           </div>
 
           {/* The Nested Bar */}
-          <div className="relative h-10 bg-muted/30 rounded-md overflow-hidden">
+          <div className="relative h-8 bg-muted/30 rounded-md overflow-hidden">
             {/* 99% range (outermost) */}
             <div
-              className={cn("absolute h-full", colors.bar99)}
+              className={cn("absolute h-full rounded-l-md", colors.bar99)}
               style={{
                 left: `${positions.range99Lower}%`,
                 width: `${positions.range99Upper - positions.range99Lower}%`,
@@ -209,30 +219,26 @@ export function StatRangeCard({
                 width: `${positions.range68Upper - positions.range68Lower}%`,
               }}
             />
-            {/* Average marker with value above and label below */}
+            {/* Average marker line */}
             <div
-              className="absolute top-0 bottom-0 w-0.5 bg-white z-10"
+              className="absolute top-0 bottom-0 w-0.5 bg-foreground z-10"
               style={{ left: `${positions.avg}%` }}
             >
-              {/* Value above */}
-              <div className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                <span className="text-xs font-medium text-white font-sans tabular-nums">
-                  {formatNum(stats.avg)}
-                </span>
-              </div>
-              {/* Dot */}
-              <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rounded-full border border-black/30" />
-              {/* avg label below */}
-              <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
-                <span className="text-xs font-medium text-white/80 font-sans">avg</span>
-              </div>
+              {/* Dot at top */}
+              {/* <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-foreground rounded-full border border-background" /> */}
             </div>
           </div>
 
-          {/* Labels */}
-          <div className="flex justify-between text-xs text-muted-foreground font-sans">
-            <span>min</span>
-            <span>max</span>
+          {/* Labels below bar */}
+          <div className="relative h-4">
+            <span className="absolute left-0 text-xs text-muted-foreground font-sans">min</span>
+            <span 
+              className="absolute text-xs font-medium text-muted-foreground font-sans"
+              style={{ left: `${positions.avg}%`, transform: 'translateX(-50%)' }}
+            >
+              avg
+            </span>
+            <span className="absolute right-0 text-xs text-muted-foreground font-sans">max</span>
           </div>
         </div>
 

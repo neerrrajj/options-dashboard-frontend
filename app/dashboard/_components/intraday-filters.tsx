@@ -109,7 +109,7 @@ export function IntradayFilters() {
               onValueChange={setInstrument}
               disabled={!isInitialized}
             >
-              <SelectTrigger className="w-[120px] cursor-pointer text-sm">
+              <SelectTrigger className="w-[150px] cursor-pointer text-sm">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -219,7 +219,7 @@ export function IntradayFilters() {
                     )}
                     disabled={!isInitialized || availableDates.length === 0}
                   >
-                    {selectedDate ? format(selectedDate, "yyyy-MM-dd") : "Pick date"}
+                    {selectedDate ? format(selectedDate, "dd-MM-yyyy") : "Pick date"}
                     <ChevronDownIcon className="h-4 w-4 text-neutral-500"/>
                   </Button>
                 </PopoverTrigger>
