@@ -290,13 +290,27 @@ export const GexChart = () => {
     });
   };
 
-  if (timestampsLoading || !isInitialized) {
+  if (timestampsLoading || !isInitialized || isLoading || chartData.length === 0) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center h-96">
-          <div className="text-center">Loading chart data...</div>
-        </CardContent>
-      </Card>
+      <>
+        <Card>
+          <CardHeader>
+            <div className="h-8 w-48 bg-muted/50 rounded animate-pulse" />
+          </CardHeader>
+          <CardContent>
+            <div className="h-[500px] bg-muted/50 rounded-lg animate-pulse" />
+            <div className="mt-4 h-6 w-full bg-muted/50 rounded animate-pulse" />
+          </CardContent>
+        </Card>
+        <Card className="mt-6">
+          <CardHeader>
+            <div className="h-8 w-64 bg-muted/50 rounded animate-pulse" />
+          </CardHeader>
+          <CardContent>
+            <div className="h-96 bg-muted/50 rounded-lg animate-pulse" />
+          </CardContent>
+        </Card>
+      </>
     );
   }
 
@@ -586,7 +600,6 @@ export const GexChart = () => {
                   strokeWidth={0.5}
                   fill="url(#splitColor)"
                   dot={false}
-                  isAnimationActive={false}
                 />
               </AreaChart>
             </ResponsiveContainer>

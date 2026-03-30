@@ -18,10 +18,10 @@ export const Navbar = () => {
             <div className="container mx-auto px-4">
                 <div className="flex h-16 items-center justify-between">
                     <div className="flex items-center gap-8">
-                        <Link href="/dashboard" className="flex items-center gap-3 group">
+                        <div className="flex items-center gap-3 group cursor-default">
                             <span className="text-landing-accent text-xl">◆</span>
                             <span className="text-2xl font-bold">optionstrike</span>
-                        </Link>
+                        </div>
                         
                         {/* Dashboard Navigation */}
                         <div className="flex items-center gap-1">

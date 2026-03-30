@@ -25,8 +25,18 @@ export const OtmGreeksChart = () => {
     isLoading: boolean;
   };
 
-  if (isLoading) return <div></div>;
-  if (!data.length) return <div></div>;
+  if (isLoading || !data.length) {
+    return (
+      <Card>
+        <CardHeader>
+          <div className="h-8 w-48 bg-muted/50 rounded animate-pulse" />
+        </CardHeader>
+        <CardContent>
+          <div className="h-96 bg-muted/50 rounded-lg animate-pulse" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   const first = data[0];
 

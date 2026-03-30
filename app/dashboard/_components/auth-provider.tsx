@@ -1,19 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { isLoading, isAuthenticated, initializeAuth } = useAuthStore();
-  const [isReady, setIsReady] = useState(false);
+  const { initializeAuth } = useAuthStore();
 
   useEffect(() => {
     let mounted = true;
     
     const init = async () => {
-      await initializeAuth();
       if (mounted) {
-        setIsReady(true);
+        await initializeAuth();
       }
     };
     
@@ -24,15 +22,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [initializeAuth]);
 
-  // Show loading during initial auth check
-  if (!isReady || isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-
-  // Render children - middleware handles auth redirects
+  // Render children immediately - let pages handle their own loading states
+  // Auth state is checked by middleware, pages can use useAuthStore if needed
   return <>{children}</>;
 }

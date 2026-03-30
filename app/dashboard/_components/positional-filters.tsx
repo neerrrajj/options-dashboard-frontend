@@ -192,18 +192,10 @@ export function PositionalFilters() {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className={cn(
-                    "w-[220px] justify-between text-left font-normal cursor-pointer text-sm",
-                    !isValidInstrument && instrument && "border-red-500/50 text-red-500"
-                  )}
+                  className="w-[220px] justify-between text-left font-normal cursor-pointer text-sm"
                   disabled={isLoading}
                 >
-                  {isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      Loading...
-                    </span>
-                  ) : selectedSymbolInfo ? (
+                  {selectedSymbolInfo ? (
                     <span className="truncate">{cleanSymbol(selectedSymbolInfo.symbol)}</span>
                   ) : (
                     <span className="text-muted-foreground">Search symbol...</span>
