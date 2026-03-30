@@ -29,10 +29,10 @@ export const OtmGreeksChart = () => {
     return (
       <Card>
         <CardHeader>
-          <div className="h-8 w-48 bg-muted/50 rounded animate-pulse" />
+          <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         </CardHeader>
         <CardContent>
-          <div className="h-96 bg-muted/50 rounded-lg animate-pulse" />
+          <div className="h-96 bg-muted rounded-lg animate-pulse" />
         </CardContent>
       </Card>
     );
